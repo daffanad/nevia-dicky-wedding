@@ -1,31 +1,30 @@
 // ============================================================
-// KONFIGURASI UTAMA
+// 1. KONFIGURASI UTAMA
 // ============================================================
-// HAPUS TEKS DI BAWAH, GANTI DENGAN LINK YANG KAMU COPY DARI TAHAP 3
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwPjUX6mXxEEdrCo31UbxXO42uXiMsyeBHhSIVR-7M4ln_a7ZOaY3UQXvoHmJtEu5bB/exec"; 
+// Link API Google Apps Script milikmu
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwPjUX6mXxEEdrCo31UbxXO42uXiMsyeBHhSIVR-7M4ln_a7ZOaY3UQXvoHmJtEu5bB/exec";
 
-// CONTOH YANG BENAR (Tanda kutip harus ada):
-// const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx...panjang.../exec";
-
-
-// Variabel Global
+// Variabel Global (untuk menyimpan data sementara)
 let currentUserCode = "";
 let currentUserName = "";
 
-// 1. INISIALISASI
+// Inisialisasi Animasi AOS
 AOS.init({ once: true, offset: 100, duration: 1000 });
 
-// 2. LOGIKA BUKA UNDANGAN (CEK KE GOOGLE SHEET)
+
+// ============================================================
+// 2. LOGIKA BUKA UNDANGAN (LOGIN)
+// ============================================================
 async function openInvitation() {
-    // Ambil kode dari URL (misal: website.com/?code=TAMU01)
+    // Ambil kode dari URL (misal: ?code=NVAD21)
     const urlParams = new URLSearchParams(window.location.search);
     let code = urlParams.get('code');
 
-    // Jika tidak ada kode di link, minta input manual
+    // Jika kode tidak ada di link, minta input manual
     if (!code) {
         const input = await Swal.fire({
             title: 'Masukkan Kode Undangan',
-            text: 'Lihat kode di undangan yang Anda terima (Cth: TAMU01)',
+            text: 'Cek kode di undangan WA (Cth: NVAD21)',
             input: 'text',
             inputPlaceholder: 'Ketik Kode...',
             confirmButtonText: 'Buka Undangan',
@@ -43,40 +42,50 @@ async function openInvitation() {
         }
     }
 
-    // Loading...
+    // Tampilkan Loading
     Swal.fire({
-        title: 'Mengecek Data...',
+        title: 'Memverifikasi Data...',
         text: 'Mohon tunggu sebentar',
         allowOutsideClick: false,
         didOpen: () => { Swal.showLoading() }
     });
 
     try {
-        // Kirim request ke Google Sheet
+        // Panggil Google Script
         const response = await fetch(`${SCRIPT_URL}?action=check&code=${code}`);
-        const data = await response.json();
+        
+        // Cek jika response bukan JSON (biasanya karena error permission script)
+        const textResponse = await response.text();
+        let data;
+        try {
+            data = JSON.parse(textResponse);
+        } catch (err) {
+            throw new Error("Gagal membaca data. Pastikan Deployment Script diset ke 'Anyone'.");
+        }
 
         if (data.status === 'success') {
             // BERHASIL LOGIN
             currentUserCode = code;
             currentUserName = data.nama;
             
-            // Isi nama tamu di Cover
+            // 1. Update Nama di Cover
             document.getElementById('guest-name').innerText = data.nama;
             
-            // Isi nama tamu di Form RSVP
+            // 2. Update Nama di Form RSVP
             document.getElementById('display-nama').innerText = data.nama;
             document.getElementById('display-grup').innerText = data.grup;
 
             Swal.close(); // Tutup loading
 
-            // Jalankan Animasi Buka
+            // 3. Jalankan Animasi Buka Undangan
             const cover = document.getElementById('cover');
             const musicBox = document.querySelector('.music-box');
+            
             cover.classList.add('open');
             musicBox.classList.add('show');
             playMusic();
             
+            // Buka Scroll
             document.body.style.overflowY = 'auto';
             document.body.style.overflowX = 'hidden';
 
@@ -85,22 +94,25 @@ async function openInvitation() {
             Swal.fire({
                 icon: 'error',
                 title: 'Kode Salah',
-                text: 'Kode tidak ada di buku tamu kami.',
+                text: `Kode '${code}' tidak ditemukan di buku tamu.`,
                 confirmButtonColor: '#b88746'
             });
         }
     } catch (error) {
-        console.error(error);
+        console.error("Error:", error);
         Swal.fire({
             icon: 'error',
-            title: 'Gagal Koneksi',
-            text: 'Pastikan sinyal internet lancar.',
+            title: 'Kesalahan Sistem',
+            text: error.message || 'Gagal terhubung ke server.',
             confirmButtonColor: '#b88746'
         });
     }
 }
 
-// 3. LOGIKA KIRIM RSVP & DAPATKAN QR
+
+// ============================================================
+// 3. LOGIKA KIRIM RSVP & GENERATE QR
+// ============================================================
 function submitRSVP(event) {
     event.preventDefault();
     
@@ -108,12 +120,12 @@ function submitRSVP(event) {
     const ucapan = document.getElementById('ucapan').value;
     const btn = document.getElementById('btn-submit-rsvp');
 
-    // Tombol jadi loading
-    const textAsli = btn.innerHTML;
+    // Ubah tombol jadi loading
+    const originalText = btn.innerHTML;
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...';
     btn.disabled = true;
 
-    // Siapkan data
+    // Siapkan data form
     const formData = new FormData();
     formData.append('action', 'rsvp');
     formData.append('code', currentUserCode);
@@ -128,16 +140,20 @@ function submitRSVP(event) {
     .then(response => response.json())
     .then(data => {
         if(data.status === 'success') {
-            // BERHASIL
+            // BERHASIL SIMPAN
+            // 1. Sembunyikan Form
             document.getElementById('rsvp-form-container').style.display = 'none';
+            // 2. Tampilkan QR Container
             document.getElementById('qr-result-container').style.display = 'block';
 
-            // Generate QR Code
+            // 3. Generate QR Code
             const qrContainer = document.getElementById("qrcode");
-            qrContainer.innerHTML = "";
+            qrContainer.innerHTML = ""; // Bersihkan QR lama jika ada
+            
             new QRCode(qrContainer, {
-                text: currentUserCode, // Isi QR = Kode Tamu
-                width: 160, height: 160,
+                text: currentUserCode, // Isi QR adalah Kode Tamu
+                width: 160,
+                height: 160,
                 colorDark : "#b88746",
                 colorLight : "#ffffff",
                 correctLevel : QRCode.CorrectLevel.H
@@ -145,42 +161,70 @@ function submitRSVP(event) {
 
             Swal.fire({
                 icon: 'success',
-                title: 'Berhasil',
-                text: 'Ucapan & Konfirmasi tersimpan!',
+                title: 'Tersimpan!',
+                text: 'Terima kasih atas konfirmasi kehadiran Anda.',
                 confirmButtonColor: '#b88746'
             });
         } else {
-            throw new Error('Gagal simpan');
+            throw new Error('Gagal menyimpan ke database.');
         }
     })
     .catch(err => {
-        Swal.fire('Error', 'Gagal menyimpan data.', 'error');
+        console.error(err);
+        Swal.fire('Error', 'Gagal mengirim data. Coba lagi.', 'error');
         btn.disabled = false;
-        btn.innerHTML = textAsli;
+        btn.innerHTML = originalText;
     });
 }
 
-// 4. DOWNLOAD QR
+
+// ============================================================
+// 4. DOWNLOAD QR CODE
+// ============================================================
 function downloadQR() {
     const qrCanvas = document.querySelector('#qrcode canvas');
+    
     if(qrCanvas) {
+        // Ubah canvas menjadi gambar PNG
         const imgUrl = qrCanvas.toDataURL("image/png");
+        
+        // Buat link download palsu
         const link = document.createElement('a');
         link.href = imgUrl;
-        // Nama file saat didownload
+        
+        // Bersihkan nama file agar aman
         const safeName = currentUserName.replace(/[^a-z0-9]/gi, '_').toLowerCase();
         link.download = `QR_Wedding_${safeName}.png`;
+        
+        // Klik otomatis
         link.click();
+    } else {
+        // Fallback untuk browser lama (jika render pakai img tag)
+        const qrImg = document.querySelector('#qrcode img');
+        if(qrImg) {
+            const link = document.createElement('a');
+            link.href = qrImg.src;
+            link.download = `QR_Wedding_${currentUserName}.png`;
+            link.click();
+        }
     }
 }
 
-// 5. FITUR LAIN (Musik, Salin Rek)
+
+// ============================================================
+// 5. FITUR TAMBAHAN (Musik & Salin Rek)
+// ============================================================
+
+// --- Music Player ---
 const audio = document.getElementById('bg-music');
 const diskIcon = document.getElementById('disk-icon');
 let isPlaying = false;
 
 function playMusic() {
-    audio.play().catch(() => console.log("Autoplay blocked"));
+    // Autoplay policy browser kadang memblokir, kita tangkap errornya
+    audio.play().catch(() => {
+        console.log("Autoplay audio diblokir browser sebelum interaksi user.");
+    });
     isPlaying = true;
     diskIcon.classList.remove('paused-disk');
 }
@@ -196,11 +240,16 @@ function toggleMusic() {
     isPlaying = !isPlaying;
 }
 
+// --- Salin Rekening ---
 function salinRek() {
+    // Ganti nomor rekening asli di sini
     navigator.clipboard.writeText("1234567890");
+    
     Swal.fire({
-        icon: 'success', title: 'Disalin', 
-        showConfirmButton: false, timer: 1000, 
-        confirmButtonColor: '#c5a059'
+        icon: 'success',
+        title: 'Disalin',
+        showConfirmButton: false,
+        timer: 1000,
+        confirmButtonColor: '#b88746'
     });
 }
