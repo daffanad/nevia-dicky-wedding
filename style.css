@@ -1,0 +1,177 @@
+:root {
+    --gold: #b88746;
+    --gold-light: #e8d3b5;
+    --cream-transparent: rgba(255, 255, 255, 0.92);
+    --text-dark: #4a4a4a;
+    --white: #ffffff;
+}
+
+body {
+    font-family: 'Cormorant Garamond', serif;
+    color: var(--text-dark);
+    overflow-x: hidden;
+    /* Background Image (Pastikan URL ini benar atau ganti dengan file lokal) */
+    background-image: url('images/bgutama.png'); 
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+/* --- TYPOGRAPHY --- */
+.font-aesthetic { font-family: 'Great Vibes', cursive; }
+.text-gold { color: var(--gold) !important; }
+.fw-bold { font-weight: 700 !important; }
+
+/* --- LAYOUT & SECTIONS --- */
+.content-section {
+    background-color: var(--cream-transparent);
+    padding: 5rem 0;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    border-radius: 0; /* Full width on mobile looks better usually, or keep rounded */
+    margin: 20px 0;   /* Space between sections */
+}
+
+@media (min-width: 768px) {
+    .content-section {
+        margin: 40px 20px;
+        border-radius: 20px;
+        padding: 6rem 0;
+    }
+}
+
+/* --- COVER SECTION --- */
+#cover {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100vh;
+    background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('images/bg1.png'); 
+    background-size: cover;
+    background-position: center;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 1s ease-in-out;
+}
+
+#cover.open { transform: translateY(-100%); }
+
+.guest-box {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 12px 30px;
+    border-radius: 50px;
+    display: inline-block;
+    color: var(--gold);
+    font-size: 1.1rem;
+    border: 2px solid var(--gold);
+}
+
+/* --- BUTTONS --- */
+.btn-gold {
+    background: linear-gradient(45deg, var(--gold), #d4af37);
+    color: white;
+    border: none;
+    transition: all 0.3s;
+}
+.btn-gold:hover {
+    transform: translateY(-3px);
+    color: white;
+}
+.btn-outline-gold {
+    border: 2px solid var(--gold);
+    color: var(--gold);
+    font-weight: 600;
+}
+.btn-outline-gold:hover { background-color: var(--gold); color: white; }
+
+/* --- MUSIC CONTROL --- */
+.music-box {
+    position: fixed; bottom: 20px; right: 20px; z-index: 999;
+    background: white; padding: 10px; border-radius: 50%;
+    box-shadow: 0 4px 15px rgba(197, 160, 89, 0.3);
+    cursor: pointer; border: 2px solid var(--gold);
+    opacity: 0; transition: opacity 1s;
+}
+.music-box.show { opacity: 1; }
+.spin-disk { animation: spin 4s linear infinite; }
+.paused-disk { animation-play-state: paused; }
+@keyframes spin { 100% { transform: rotate(360deg); } }
+
+/* --- COUPLE & IMAGES --- */
+.couple-frame img {
+    width: 180px; height: 180px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 4px solid var(--gold);
+    padding: 5px;
+    background: white;
+}
+
+/* --- GALLERY (OUR MOMENTS) - RAPI & KOTAK --- */
+.gallery-item {
+    display: block;
+    overflow: hidden;
+    border-radius: 15px;
+    position: relative;
+}
+
+/* Class baru untuk memaksa gambar jadi kotak (Square) */
+.img-crop {
+    width: 100%;
+    aspect-ratio: 1 / 1; /* Membuat rasio 1:1 (Kotak) */
+    object-fit: cover;   /* Memotong gambar agar pas di kotak tanpa gepeng */
+    transition: transform 0.5s ease;
+}
+
+.gallery-item:hover .img-crop {
+    transform: scale(1.1); /* Efek zoom saat dihover */
+}
+
+/* --- TIMELINE --- */
+.timeline {
+    border-left: 3px solid var(--gold-light);
+    padding-left: 30px;
+    margin-left: 10px;
+}
+.timeline-item { position: relative; margin-bottom: 40px; }
+.timeline-dot {
+    position: absolute; left: -39px; top: 5px;
+    width: 16px; height: 16px;
+    background: var(--gold);
+    border-radius: 50%;
+    border: 3px solid white;
+    box-shadow: 0 0 0 2px var(--gold-light);
+}
+
+/* --- CARDS --- */
+.gold-card {
+    background: var(--white);
+    padding: 30px 20px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(184, 135, 70, 0.1);
+    border: 1px solid var(--gold-light);
+}
+.gold-line {
+    border-top: 3px solid var(--gold);
+    width: 50px; margin: 15px auto; opacity: 1;
+}
+
+/* --- RESPONSIVE MOBILE (Bagian Penting) --- */
+@media (max-width: 768px) {
+    /* Font Size Adjustment */
+    .display-1 { font-size: 3.5rem; } /* Judul Cover */
+    .display-4 { font-size: 2.5rem; } /* Judul Section */
+    
+    /* Padding Adjustment */
+    .content-section { padding: 4rem 0; margin: 0; }
+    
+    /* Couple Section */
+    .couple-frame img { width: 150px; height: 150px; }
+    
+    /* Ampersand (&) Adjustment */
+    .col-lg-2 h1.font-aesthetic { font-size: 3rem !important; margin: 10px 0; }
+    
+    /* Gallery Mobile Grid */
+    /* Di HP, padding antar foto dikurangi biar muat */
+    .row.g-3 { --bs-gutter-y: 1rem; --bs-gutter-x: 1rem; }
+}
