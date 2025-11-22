@@ -1,41 +1,38 @@
 // ============================================================
 // 1. KONFIGURASI UTAMA
 // ============================================================
-// Link API Google Apps Script milikmu (SUDAH SAYA MASUKKAN LINK KAMU)
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwPjUX6mXxEEdrCo31UbxXO42uXiMsyeBHhSIVR-7M4ln_a7ZOaY3UQXvoHmJtEu5bB/exec";
-
-// Cek apakah script berjalan saat halaman dimuat
-console.log("Script.js berhasil dimuat!"); 
+// Link API Google Apps Script milikmu
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyoVVrzB3N0okeJp3Mel5ADwlk0ZIujvfEaXthNqgimjCCrMPoAeKdO1CyVldTy878F5A/exec";
 
 // Variabel Global
 let currentUserCode = "";
 let currentUserName = "";
 
-// Inisialisasi Animasi AOS (Dibungkus try-catch agar aman)
+// Cek status load
+console.log("Script.js v2 (jQuery Version) Loaded!");
+
+// Inisialisasi AOS
 try {
     AOS.init({ once: true, offset: 100, duration: 1000 });
-} catch (e) {
-    console.warn("AOS Animation error:", e);
-}
+} catch (e) { console.warn("AOS init error", e); }
 
 
 // ============================================================
-// 2. LOGIKA BUKA UNDANGAN
+// 2. LOGIKA BUKA UNDANGAN (PAKAI JQUERY AJAX)
 // ============================================================
 async function openInvitation() {
-    console.log("Tombol Buka Undangan Di-klik"); // Debugging
+    console.log("Tombol diklik...");
 
-    // Cek apakah SweetAlert (Swal) sudah terload
-    if (typeof Swal === 'undefined') {
-        alert("Error: Library SweetAlert belum terload. Cek koneksi internet Anda.");
+    // Cek Library jQuery
+    if (typeof $ === 'undefined') {
+        alert("Error: jQuery belum terload. Cek koneksi internet.");
         return;
     }
 
-    // Ambil kode dari URL
     const urlParams = new URLSearchParams(window.location.search);
     let code = urlParams.get('code');
 
-    // Jika kode tidak ada, minta input manual
+    // Minta input jika kode kosong
     if (!code) {
         const input = await Swal.fire({
             title: 'Masukkan Kode Undangan',
@@ -45,117 +42,110 @@ async function openInvitation() {
             confirmButtonText: 'Buka Undangan',
             confirmButtonColor: '#b88746',
             allowOutsideClick: false,
-            inputValidator: (value) => {
-                if (!value) return 'Kode harus diisi!';
-            }
+            inputValidator: (value) => { if (!value) return 'Wajib diisi!' }
         });
 
-        if (input.isConfirmed) {
-            code = input.value;
-        } else {
-            return;
-        }
+        if (input.isConfirmed) code = input.value;
+        else return;
     }
 
     // Tampilkan Loading
     Swal.fire({
-        title: 'Memverifikasi...',
-        text: 'Mohon tunggu sebentar',
+        title: 'Mengecek Data...',
+        text: 'Mohon tunggu, sedang menghubungi server...',
         allowOutsideClick: false,
         didOpen: () => { Swal.showLoading() }
     });
 
-    try {
-        console.log("Menghubungi Server:", SCRIPT_URL);
-        
-        const response = await fetch(`${SCRIPT_URL}?action=check&code=${code}`);
-        const data = await response.json(); // Langsung parse JSON
+    console.log("Mengirim request ke Google Sheet...");
 
-        if (data.status === 'success') {
-            console.log("Login Berhasil:", data);
+    // --- SOLUSI: Ganti fetch dengan jQuery AJAX ---
+    $.ajax({
+        url: SCRIPT_URL,
+        type: "GET",
+        data: { action: "check", code: code },
+        dataType: "json",
+        crossDomain: true,
+        success: function(data) {
+            console.log("Respon diterima:", data);
             
-            // Simpan data
-            currentUserCode = code;
-            currentUserName = data.nama;
-            
-            // Update Teks di Website
-            document.getElementById('guest-name').innerText = data.nama;
-            document.getElementById('display-nama').innerText = data.nama;
-            document.getElementById('display-grup').innerText = data.grup;
+            if (data.status === 'success') {
+                // BERHASIL
+                currentUserCode = code;
+                currentUserName = data.nama;
 
-            Swal.close(); // Tutup loading
+                // Update Tampilan
+                $('#guest-name').text(data.nama);
+                $('#display-nama').text(data.nama);
+                $('#display-grup').text(data.grup);
 
-            // Jalankan Animasi Buka
-            const cover = document.getElementById('cover');
-            const musicBox = document.querySelector('.music-box');
-            
-            cover.classList.add('open');
-            musicBox.classList.add('show');
-            playMusic();
-            
-            // Buka Scroll
-            document.body.style.overflowY = 'auto';
-            document.body.style.overflowX = 'hidden';
+                Swal.close();
 
-        } else {
-            // GAGAL
+                // Animasi Buka
+                $('#cover').addClass('open');
+                $('.music-box').addClass('show');
+                playMusic();
+
+                $('body').css('overflow-y', 'auto');
+                $('body').css('overflow-x', 'hidden');
+            } else {
+                // KODE SALAH
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Kode Salah',
+                    text: 'Kode tidak ditemukan di database.',
+                    confirmButtonColor: '#b88746'
+                });
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error("Error AJAX:", status, error);
+            // Kadang Google return redirect 302 dianggap error oleh ajax biasa
+            // Tapi biasanya jQuery menghandle ini. Jika masuk sini, berarti koneksi putus/blokir.
             Swal.fire({
                 icon: 'error',
-                title: 'Kode Tidak Ditemukan',
-                text: `Kode '${code}' salah atau tidak terdaftar.`,
+                title: 'Gagal Koneksi',
+                text: 'Gagal mengambil data. Coba matikan AdBlock atau ganti browser/jaringan.',
                 confirmButtonColor: '#b88746'
             });
         }
-    } catch (error) {
-        console.error("Error Fetching:", error);
-        Swal.fire({
-            icon: 'error',
-            title: 'Gagal Terhubung',
-            text: 'Terjadi kesalahan koneksi ke server Google. Coba refresh halaman.',
-            confirmButtonColor: '#b88746'
-        });
-    }
+    });
 }
 
 
 // ============================================================
-// 3. LOGIKA KIRIM RSVP
+// 3. LOGIKA KIRIM RSVP (PAKAI JQUERY AJAX)
 // ============================================================
 function submitRSVP(event) {
     event.preventDefault();
     
-    const kehadiran = document.getElementById('kehadiran').value;
-    const ucapan = document.getElementById('ucapan').value;
-    const btn = document.getElementById('btn-submit-rsvp');
+    const kehadiran = $('#kehadiran').val();
+    const ucapan = $('#ucapan').val();
+    const btn = $('#btn-submit-rsvp');
+    const originalText = btn.html();
 
     // Loading State
-    const originalText = btn.innerHTML;
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...';
-    btn.disabled = true;
+    btn.html('<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...').prop('disabled', true);
 
-    const formData = new FormData();
-    formData.append('action', 'rsvp');
-    formData.append('code', currentUserCode);
-    formData.append('kehadiran', kehadiran);
-    formData.append('ucapan', ucapan);
+    $.ajax({
+        url: SCRIPT_URL,
+        type: "POST",
+        data: {
+            action: 'rsvp',
+            code: currentUserCode,
+            kehadiran: kehadiran,
+            ucapan: ucapan
+        },
+        dataType: "json",
+        success: function(data) {
+            if (data.status === 'success') {
+                // Berhasil
+                $('#rsvp-form-container').hide();
+                $('#qr-result-container').show();
 
-    fetch(SCRIPT_URL, {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if(data.status === 'success') {
-            // Berhasil
-            document.getElementById('rsvp-form-container').style.display = 'none';
-            document.getElementById('qr-result-container').style.display = 'block';
-
-            // Generate QR
-            const qrContainer = document.getElementById("qrcode");
-            qrContainer.innerHTML = "";
-            
-            // Cek Library QR
-            if(typeof QRCode !== 'undefined') {
+                // Generate QR
+                const qrContainer = document.getElementById("qrcode");
+                qrContainer.innerHTML = "";
                 new QRCode(qrContainer, {
                     text: currentUserCode,
                     width: 160, height: 160,
@@ -163,24 +153,22 @@ function submitRSVP(event) {
                     colorLight : "#ffffff",
                     correctLevel : QRCode.CorrectLevel.H
                 });
-            } else {
-                qrContainer.innerHTML = "QR Code Library Error";
-            }
 
-            Swal.fire({
-                icon: 'success', title: 'Tersimpan!',
-                text: 'Terima kasih atas konfirmasinya.',
-                confirmButtonColor: '#b88746'
-            });
-        } else {
-            throw new Error('Gagal menyimpan.');
+                Swal.fire({
+                    icon: 'success', title: 'Tersimpan!',
+                    text: 'Konfirmasi Anda berhasil dikirim.',
+                    confirmButtonColor: '#b88746'
+                });
+            } else {
+                alert("Gagal menyimpan data ke Google Sheet.");
+                btn.html(originalText).prop('disabled', false);
+            }
+        },
+        error: function(err) {
+            console.error(err);
+            Swal.fire('Error', 'Gagal mengirim data. Coba lagi.', 'error');
+            btn.html(originalText).prop('disabled', false);
         }
-    })
-    .catch(err => {
-        console.error(err);
-        Swal.fire('Error', 'Gagal mengirim data.', 'error');
-        btn.disabled = false;
-        btn.innerHTML = originalText;
     });
 }
 
@@ -198,7 +186,6 @@ function downloadQR() {
         link.download = `QR_Wedding_${safeName}.png`;
         link.click();
     } else {
-        // Fallback
         const qrImg = document.querySelector('#qrcode img');
         if(qrImg) {
             const link = document.createElement('a');
@@ -219,7 +206,7 @@ let isPlaying = false;
 
 function playMusic() {
     if(audio) {
-        audio.play().catch(e => console.log("Autoplay blocked:", e));
+        audio.play().catch(e => console.log("Autoplay blocked"));
         isPlaying = true;
         if(diskIcon) diskIcon.classList.remove('paused-disk');
     }
