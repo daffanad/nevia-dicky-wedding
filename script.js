@@ -1,15 +1,16 @@
 // ============================================================
 // 1. KONFIGURASI UTAMA
 // ============================================================
-// Link API Google Apps Script milikmu
+// Link API Google Apps Script (PASTIKAN LINK INI BENAR)
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyoVVrzB3N0okeJp3Mel5ADwlk0ZIujvfEaXthNqgimjCCrMPoAeKdO1CyVldTy878F5A/exec";
 
 // Variabel Global
 let currentUserCode = "";
 let currentUserName = "";
+let isDataLoaded = false; // Penanda apakah data sudah sukses diambil
 
-// Cek status load
-console.log("Script.js v2 (jQuery Version) Loaded!");
+// Cek status load console
+console.log("Script Final Loaded!");
 
 // Inisialisasi AOS
 try {
@@ -18,103 +19,132 @@ try {
 
 
 // ============================================================
-// 2. LOGIKA BUKA UNDANGAN (PAKAI JQUERY AJAX)
+// 2. AUTO FETCH (JALAN OTOMATIS SAAT WEBSITE DIBUKA)
+// ============================================================
+$(document).ready(function() {
+    // Ambil kode dari URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+
+    // Jika ada kode di URL, langsung tanya Google Siapa dia?
+    if (code) {
+        // Ubah teks sementara jadi Loading...
+        $('#guest-name').html('<i class="fa-solid fa-spinner fa-spin"></i> Memuat Nama...');
+
+        $.ajax({
+            url: SCRIPT_URL,
+            type: "GET",
+            data: { action: "check", code: code },
+            dataType: "json",
+            crossDomain: true,
+            success: function(data) {
+                if (data.status === 'success') {
+                    console.log("Auto Fetch Berhasil:", data);
+                    
+                    // 1. Simpan ke variabel global
+                    currentUserCode = code;
+                    currentUserName = data.nama;
+                    isDataLoaded = true; // Tandai sukses
+
+                    // 2. GANTI NAMA DI COVER
+                    $('#guest-name').text(data.nama);
+
+                    // 3. Isi data untuk RSVP nanti
+                    $('#display-nama').text(data.nama);
+                    $('#display-grup').text(data.grup);
+                } else {
+                    // Jika kode salah
+                    $('#guest-name').text("Tamu Spesial");
+                    console.log("Kode tidak ditemukan di database");
+                }
+            },
+            error: function(err) {
+                console.error("Gagal Auto Fetch:", err);
+                $('#guest-name').text("Tamu Undangan");
+            }
+        });
+    }
+});
+
+
+// ============================================================
+// 3. LOGIKA TOMBOL BUKA UNDANGAN
 // ============================================================
 async function openInvitation() {
     console.log("Tombol diklik...");
 
-    // Cek Library jQuery
-    if (typeof $ === 'undefined') {
-        alert("Error: jQuery belum terload. Cek koneksi internet.");
+    // SKENARIO A: Data sudah berhasil diambil otomatis tadi (Auto Fetch)
+    if (isDataLoaded) {
+        bukaPintu(); // Langsung buka tanpa loading
         return;
     }
 
+    // SKENARIO B: Data belum ada (Mungkin buka tanpa link kode, atau internet lemot tadi)
+    // Maka kita lakukan cara manual seperti sebelumnya
+    
     const urlParams = new URLSearchParams(window.location.search);
     let code = urlParams.get('code');
 
-    // Minta input jika kode kosong
+    // Jika kode tidak ada di URL, minta input manual
     if (!code) {
         const input = await Swal.fire({
-            title: 'Masukkan Kode Undangan',
-            text: 'Cek kode di undangan WA (Cth: NVAD21)',
+            title: 'Masukkan Kode',
             input: 'text',
-            inputPlaceholder: 'Ketik Kode...',
-            confirmButtonText: 'Buka Undangan',
+            inputPlaceholder: 'Cth: NVAD21',
+            confirmButtonText: 'Buka',
             confirmButtonColor: '#b88746',
             allowOutsideClick: false,
             inputValidator: (value) => { if (!value) return 'Wajib diisi!' }
         });
-
         if (input.isConfirmed) code = input.value;
         else return;
     }
 
-    // Tampilkan Loading
+    // Fetch Manual dengan Loading Screen
     Swal.fire({
-        title: 'Mengecek Data...',
-        text: 'Mohon tunggu, sedang menghubungi server...',
-        allowOutsideClick: false,
+        title: 'Memverifikasi...',
         didOpen: () => { Swal.showLoading() }
     });
 
-    console.log("Mengirim request ke Google Sheet...");
-
-    // --- SOLUSI: Ganti fetch dengan jQuery AJAX ---
     $.ajax({
         url: SCRIPT_URL,
         type: "GET",
         data: { action: "check", code: code },
         dataType: "json",
-        crossDomain: true,
         success: function(data) {
-            console.log("Respon diterima:", data);
-            
+            Swal.close();
             if (data.status === 'success') {
-                // BERHASIL
+                // Update Data
                 currentUserCode = code;
                 currentUserName = data.nama;
-
-                // Update Tampilan
+                
                 $('#guest-name').text(data.nama);
                 $('#display-nama').text(data.nama);
                 $('#display-grup').text(data.grup);
-
-                Swal.close();
-
-                // Animasi Buka
-                $('#cover').addClass('open');
-                $('.music-box').addClass('show');
-                playMusic();
-
-                $('body').css('overflow-y', 'auto');
-                $('body').css('overflow-x', 'hidden');
+                
+                bukaPintu(); // Jalankan animasi
             } else {
-                // KODE SALAH
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Kode Salah',
-                    text: 'Kode tidak ditemukan di database.',
-                    confirmButtonColor: '#b88746'
-                });
+                Swal.fire('Error', 'Kode tidak ditemukan.', 'error');
             }
         },
-        error: function(xhr, status, error) {
-            console.error("Error AJAX:", status, error);
-            // Kadang Google return redirect 302 dianggap error oleh ajax biasa
-            // Tapi biasanya jQuery menghandle ini. Jika masuk sini, berarti koneksi putus/blokir.
-            Swal.fire({
-                icon: 'error',
-                title: 'Gagal Koneksi',
-                text: 'Gagal mengambil data. Coba matikan AdBlock atau ganti browser/jaringan.',
-                confirmButtonColor: '#b88746'
-            });
+        error: function() {
+            Swal.fire('Error', 'Gagal koneksi.', 'error');
         }
     });
 }
 
+// Fungsi animasi buka (biar rapi dipisah)
+function bukaPintu() {
+    $('#cover').addClass('open');
+    $('.music-box').addClass('show');
+    playMusic();
+    $('body').css('overflow-y', 'auto');
+    $('body').css('overflow-x', 'hidden');
+}
+
 
 // ============================================================
-// 3. LOGIKA KIRIM RSVP (PAKAI JQUERY AJAX)
+// 4. LOGIKA KIRIM RSVP
 // ============================================================
 function submitRSVP(event) {
     event.preventDefault();
@@ -124,7 +154,6 @@ function submitRSVP(event) {
     const btn = $('#btn-submit-rsvp');
     const originalText = btn.html();
 
-    // Loading State
     btn.html('<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...').prop('disabled', true);
 
     $.ajax({
@@ -139,34 +168,29 @@ function submitRSVP(event) {
         dataType: "json",
         success: function(data) {
             if (data.status === 'success') {
-                // Berhasil
                 $('#rsvp-form-container').hide();
                 $('#qr-result-container').show();
 
                 // Generate QR
                 const qrContainer = document.getElementById("qrcode");
                 qrContainer.innerHTML = "";
-                new QRCode(qrContainer, {
-                    text: currentUserCode,
-                    width: 160, height: 160,
-                    colorDark : "#b88746",
-                    colorLight : "#ffffff",
-                    correctLevel : QRCode.CorrectLevel.H
-                });
-
-                Swal.fire({
-                    icon: 'success', title: 'Tersimpan!',
-                    text: 'Konfirmasi Anda berhasil dikirim.',
-                    confirmButtonColor: '#b88746'
-                });
+                if(typeof QRCode !== 'undefined') {
+                    new QRCode(qrContainer, {
+                        text: currentUserCode,
+                        width: 160, height: 160,
+                        colorDark : "#b88746",
+                        colorLight : "#ffffff",
+                        correctLevel : QRCode.CorrectLevel.H
+                    });
+                }
+                Swal.fire({ icon: 'success', title: 'Tersimpan!', confirmButtonColor: '#b88746' });
             } else {
-                alert("Gagal menyimpan data ke Google Sheet.");
+                alert("Gagal simpan.");
                 btn.html(originalText).prop('disabled', false);
             }
         },
-        error: function(err) {
-            console.error(err);
-            Swal.fire('Error', 'Gagal mengirim data. Coba lagi.', 'error');
+        error: function() {
+            Swal.fire('Error', 'Gagal kirim.', 'error');
             btn.html(originalText).prop('disabled', false);
         }
     });
@@ -174,18 +198,17 @@ function submitRSVP(event) {
 
 
 // ============================================================
-// 4. DOWNLOAD QR
+// 5. FITUR LAIN (QR DOWNLOAD, MUSIK, SALIN REK)
 // ============================================================
 function downloadQR() {
     const qrCanvas = document.querySelector('#qrcode canvas');
     if(qrCanvas) {
-        const imgUrl = qrCanvas.toDataURL("image/png");
         const link = document.createElement('a');
-        link.href = imgUrl;
-        const safeName = currentUserName.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-        link.download = `QR_Wedding_${safeName}.png`;
+        link.href = qrCanvas.toDataURL("image/png");
+        link.download = `QR_Wedding_${currentUserName}.png`;
         link.click();
     } else {
+        // Fallback img
         const qrImg = document.querySelector('#qrcode img');
         if(qrImg) {
             const link = document.createElement('a');
@@ -196,10 +219,6 @@ function downloadQR() {
     }
 }
 
-
-// ============================================================
-// 5. FITUR LAIN
-// ============================================================
 const audio = document.getElementById('bg-music');
 const diskIcon = document.getElementById('disk-icon');
 let isPlaying = false;
