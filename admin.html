@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Admin - Penjaga Tamu</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body { background-color: #f4f4f4; font-family: sans-serif; }
+        .scanner-box { background: #000; border-radius: 10px; overflow: hidden; position: relative; }
+        .result-card { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-top: -30px; position: relative; z-index: 10; }
+        .status-badge { font-size: 0.8rem; padding: 5px 10px; border-radius: 5px; background: #eee; }
+    </style>
+</head>
+<body>
+
+    <div class="container py-4" style="max-width: 500px;">
+        <h4 class="text-center mb-3 fw-bold"><i class="fa-solid fa-user-shield me-2"></i>Panel Penjaga</h4>
+
+        <div class="scanner-box mb-4">
+            <div id="reader" style="width: 100%;"></div>
+        </div>
+
+        <div class="result-card" id="result-panel" style="display: none;">
+            <div class="text-center">
+                <h5 class="fw-bold mb-1" id="tamu-nama">-</h5>
+                <p class="text-muted small mb-2" id="tamu-grup">-</p>
+                <span class="status-badge" id="tamu-status">Belum Check-in</span>
+                <hr>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label small fw-bold">Jumlah Tamu Masuk:</label>
+                <div class="input-group">
+                    <button class="btn btn-outline-secondary" onclick="ubahJumlah(-1)">-</button>
+                    <input type="number" id="jumlah-input" class="form-control text-center" value="1" min="1" readonly>
+                    <button class="btn btn-outline-secondary" onclick="ubahJumlah(1)">+</button>
+                </div>
+            </div>
+
+            <div class="d-grid gap-2">
+                <button class="btn btn-success py-2" onclick="prosesData('IN')">
+                    <i class="fa-solid fa-check-circle me-2"></i> CHECK IN
+                </button>
+                <button class="btn btn-danger py-2" onclick="prosesData('OUT')">
+                    <i class="fa-solid fa-sign-out-alt me-2"></i> CHECK OUT
+                </button>
+                <button class="btn btn-secondary btn-sm mt-2" onclick="resetScanner()">Scan Baru</button>
+            </div>
+        </div>
+
+        <div class="text-center mt-4" id="manual-panel">
+            <p class="small text-muted">Scanner bermasalah?</p>
+            <button class="btn btn-outline-dark btn-sm" onclick="inputManual()">Input Kode Manual</button>
+        </div>
+
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+
+    <script>
+        // ============================================
+        // UPDATE LINK INI DENGAN LINK BARU KAMU
+        // ============================================
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyoVVrzB3N0okeJp3Mel5ADwlk0ZIujvfEaXthNqgimjCCrMPoAeKdO1CyVldTy878F5A/exec";
+        
+        let html5QrcodeScanner;
+        let currentCode = "";
+
+        // 1. Inisialisasi Scanner Saat Halaman Dibuka
+        $(document).ready(function() {
+            startScanner();
+        });
+
+        function startScanner() {
+            $('#result-panel').hide();
+            $('#manual-panel').show();
+            
+            // Hapus scanner lama jika ada error
+            if(html5QrcodeScanner) { html5QrcodeScanner.clear(); }
+
+            html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
+            html5QrcodeScanner.render(onScanSuccess);
+        }
+
+        // 2. Saat QR Terdeteksi
+        function onScanSuccess(decodedText) {
+            html5QrcodeScanner.clear(); // Stop scan dulu
+            cekDataTamu(decodedText);
+        }
+
+        // 3. Cek Data Tamu ke Server
+        function cekDataTamu(code) {
+            Swal.fire({ title: 'Mengecek...', didOpen: () => Swal.showLoading() });
+
+            $.ajax({
+                url: SCRIPT_URL,
+                type: "GET",
+                data: { action: "get_guest_details", code: code },
+                dataType: "json",
+                success: function(data) {
+                    Swal.close();
+                    if (data.status === 'success') {
+                        // Tampilkan Data
+                        currentCode = code;
+                        $('#tamu-nama').text(data.nama);
+                        $('#tamu-grup').text(data.grup);
+                        
+                        // Status Logika
+                        let statusText = data.status_terakhir ? data.status_terakhir : "Belum ada record";
+                        $('#tamu-status').text(statusText);
+                        
+                        // Reset input jumlah ke 1 (atau jumlah sebelumnya jika ada)
+                        $('#jumlah-input').val(data.jumlah_tamu || 1);
+
+                        $('#manual-panel').hide();
+                        $('#result-panel').fadeIn();
+                    } else {
+                        Swal.fire('Error', 'Kode tidak ditemukan!', 'error').then(startScanner);
+                    }
+                },
+                error: function() {
+                    Swal.fire('Error', 'Gagal koneksi', 'error').then(startScanner);
+                }
+            });
+        }
+
+        // 4. Proses Check IN / OUT
+        function prosesData(type) {
+            let jumlah = $('#jumlah-input').val();
+            let pesan = (type === 'IN') ? `Check-in ${jumlah} orang?` : `Yakin Tamu Check-out?`;
+
+            Swal.fire({
+                title: pesan,
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Proses',
+                confirmButtonColor: (type === 'IN' ? '#198754' : '#dc3545')
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({ title: 'Menyimpan...', didOpen: () => Swal.showLoading() });
+
+                    $.ajax({
+                        url: SCRIPT_URL,
+                        type: "POST",
+                        data: {
+                            action: 'update_attendance',
+                            code: currentCode,
+                            type: type,
+                            jumlah: jumlah
+                        },
+                        dataType: "json",
+                        success: function(data) {
+                            if (data.status === 'success') {
+                                Swal.fire('Sukses', data.message, 'success').then(resetScanner);
+                            } else {
+                                Swal.fire('Gagal', 'Terjadi kesalahan sistem', 'error');
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        // Helper: Ubah Jumlah
+        function ubahJumlah(n) {
+            let val = parseInt($('#jumlah-input').val());
+            if (val + n >= 1) $('#jumlah-input').val(val + n);
+        }
+
+        // Helper: Reset
+        function resetScanner() {
+            currentCode = "";
+            startScanner();
+        }
+
+        // Helper: Input Manual
+        function inputManual() {
+            Swal.fire({
+                title: 'Input Kode Manual',
+                input: 'text',
+                confirmButtonText: 'Cari',
+                showCancelButton: true
+            }).then((res) => {
+                if (res.isConfirmed && res.value) {
+                    cekDataTamu(res.value);
+                }
+            });
+        }
+    </script>
+</body>
+</html>

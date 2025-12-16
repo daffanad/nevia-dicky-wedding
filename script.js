@@ -1,20 +1,16 @@
 // ============================================================
 // 1. KONFIGURASI UTAMA
 // ============================================================
-// Link API Google Apps Script (UPDATED)
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxS_jfzZ_WTl5ikqrW0QYIPs4D5JKW1bM4xnsNbepR5VeIFJBhWad4oxNIAclaXAkDaFg/exec";
+// Link API Google Apps Script (PASTIKAN LINK INI BENAR)
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxoxPbGgO8SwxeuN2EYDXM-sNwKOy82Jia2YzLFWUas0mstqrNrPzWhIUOncianCaVr3Q/exec";
 
 // Variabel Global
 let currentUserCode = "";
 let currentUserName = "";
-let isDataLoaded = false; // Penanda data sukses diambil
+let isDataLoaded = false; // Penanda apakah data sudah sukses diambil
 
-// Variabel Scanner
-let html5QrcodeScanner;
-let isCameraOn = false;
-
-// Cek status load
-console.log("Script Full Version Loaded!");
+// Cek status load console
+console.log("Script Final Loaded!");
 
 // Inisialisasi AOS
 try {
@@ -26,11 +22,14 @@ try {
 // 2. AUTO FETCH (JALAN OTOMATIS SAAT WEBSITE DIBUKA)
 // ============================================================
 $(document).ready(function() {
+    // Ambil kode dari URL
     const urlParams = new URLSearchParams(window.location.search);
     const code = urlParams.get('code');
 
+    // Jika ada kode di URL, langsung tanya Google Siapa dia?
     if (code) {
-        $('#guest-name').html('<i class="fa-solid fa-spinner fa-spin"></i> Memuat...');
+        // Ubah teks sementara jadi Loading...
+        $('#guest-name').html('<i class="fa-solid fa-spinner fa-spin"></i> Memuat Nama...');
 
         $.ajax({
             url: SCRIPT_URL,
@@ -42,20 +41,21 @@ $(document).ready(function() {
                 if (data.status === 'success') {
                     console.log("Auto Fetch Berhasil:", data);
                     
+                    // 1. Simpan ke variabel global
                     currentUserCode = code;
                     currentUserName = data.nama;
-                    isDataLoaded = true; 
+                    isDataLoaded = true; // Tandai sukses
 
-                    // Update UI
+                    // 2. GANTI NAMA DI COVER
                     $('#guest-name').text(data.nama);
+
+                    // 3. Isi data untuk RSVP nanti
                     $('#display-nama').text(data.nama);
                     $('#display-grup').text(data.grup);
-
-                    // PENTING: Munculkan menu Scan karena sudah login
-                    $('#scan-section').show(); 
-
                 } else {
+                    // Jika kode salah
                     $('#guest-name').text("Tamu Spesial");
+                    console.log("Kode tidak ditemukan di database");
                 }
             },
             error: function(err) {
@@ -71,16 +71,21 @@ $(document).ready(function() {
 // 3. LOGIKA TOMBOL BUKA UNDANGAN
 // ============================================================
 async function openInvitation() {
-    // SKENARIO A: Data sudah ada (dari Auto Fetch)
+    console.log("Tombol diklik...");
+
+    // SKENARIO A: Data sudah berhasil diambil otomatis tadi (Auto Fetch)
     if (isDataLoaded) {
-        bukaPintu();
+        bukaPintu(); // Langsung buka tanpa loading
         return;
     }
 
-    // SKENARIO B: Data belum ada, ambil manual
+    // SKENARIO B: Data belum ada (Mungkin buka tanpa link kode, atau internet lemot tadi)
+    // Maka kita lakukan cara manual seperti sebelumnya
+    
     const urlParams = new URLSearchParams(window.location.search);
     let code = urlParams.get('code');
 
+    // Jika kode tidak ada di URL, minta input manual
     if (!code) {
         const input = await Swal.fire({
             title: 'Masukkan Kode',
@@ -95,6 +100,7 @@ async function openInvitation() {
         else return;
     }
 
+    // Fetch Manual dengan Loading Screen
     Swal.fire({
         title: 'Memverifikasi...',
         didOpen: () => { Swal.showLoading() }
@@ -108,6 +114,7 @@ async function openInvitation() {
         success: function(data) {
             Swal.close();
             if (data.status === 'success') {
+                // Update Data
                 currentUserCode = code;
                 currentUserName = data.nama;
                 
@@ -115,10 +122,7 @@ async function openInvitation() {
                 $('#display-nama').text(data.nama);
                 $('#display-grup').text(data.grup);
                 
-                // Munculkan menu Scan
-                $('#scan-section').show();
-
-                bukaPintu(); 
+                bukaPintu(); // Jalankan animasi
             } else {
                 Swal.fire('Error', 'Kode tidak ditemukan.', 'error');
             }
@@ -129,6 +133,7 @@ async function openInvitation() {
     });
 }
 
+// Fungsi animasi buka (biar rapi dipisah)
 function bukaPintu() {
     $('#cover').addClass('open');
     $('.music-box').addClass('show');
@@ -166,6 +171,7 @@ function submitRSVP(event) {
                 $('#rsvp-form-container').hide();
                 $('#qr-result-container').show();
 
+                // Generate QR
                 const qrContainer = document.getElementById("qrcode");
                 qrContainer.innerHTML = "";
                 if(typeof QRCode !== 'undefined') {
@@ -192,101 +198,7 @@ function submitRSVP(event) {
 
 
 // ============================================================
-// 5. FITUR SELF CHECK-IN (SCANNER KAMERA)
-// ============================================================
-function toggleCamera() {
-    const btn = document.getElementById('btn-scan-toggle');
-    
-    if (isCameraOn) {
-        // Matikan Kamera
-        if(html5QrcodeScanner) {
-            html5QrcodeScanner.stop().then(() => {
-                $('#reader').hide();
-                btn.innerHTML = '<i class="fa-solid fa-camera me-2"></i> Buka Kamera Scan';
-                btn.classList.remove('btn-danger');
-                btn.classList.add('btn-gold');
-                isCameraOn = false;
-            }).catch(err => console.error("Stop failed", err));
-        }
-    } else {
-        // Nyalakan Kamera
-        $('#reader').show();
-        btn.innerHTML = '<i class="fa-solid fa-stop me-2"></i> Stop Kamera';
-        btn.classList.remove('btn-gold');
-        btn.classList.add('btn-danger');
-        isCameraOn = true;
-
-        html5QrcodeScanner = new Html5Qrcode("reader");
-        const config = { fps: 10, qrbox: { width: 250, height: 250 } };
-        
-        // Scan menggunakan kamera belakang (environment)
-        html5QrcodeScanner.start({ facingMode: "environment" }, config, onScanSuccess)
-        .catch(err => {
-            console.error("Camera start failed", err);
-            Swal.fire('Izin Kamera Ditolak', 'Mohon izinkan akses kamera di browser Anda.', 'warning');
-            toggleCamera(); // Reset tombol
-        });
-    }
-}
-
-function onScanSuccess(decodedText, decodedResult) {
-    console.log(`Scan Result: ${decodedText}`);
-
-    // Cek apakah QR Code adalah QR Pintu
-    if (decodedText === "DOOR_CHECKIN" || decodedText === "DOOR_CHECKOUT") {
-        
-        // Matikan kamera otomatis setelah scan berhasil
-        toggleCamera();
-        
-        let statusType = (decodedText === "DOOR_CHECKIN") ? "Checked In" : "Checked Out";
-        let pesanAlert = (decodedText === "DOOR_CHECKIN") ? "Selamat Datang!" : "Hati-hati di jalan!";
-
-        Swal.fire({
-            title: 'Memproses...',
-            text: 'Mengupdate status kehadiran...',
-            didOpen: () => Swal.showLoading()
-        });
-
-        // Kirim update ke Google Sheet
-        $.ajax({
-            url: SCRIPT_URL,
-            type: "POST",
-            data: {
-                action: 'update_status',
-                code: currentUserCode, 
-                status_type: statusType
-            },
-            dataType: "json",
-            success: function(data) {
-                if(data.status === 'success') {
-                    Swal.fire({
-                        icon: 'success',
-                        title: pesanAlert,
-                        text: `Status: ${data.message}`,
-                        confirmButtonColor: '#b88746'
-                    });
-                    $('#scan-result').text(`Status Terakhir: ${data.message}`);
-                    $('#scan-result').removeClass('bg-light').addClass('bg-success text-white');
-                } else {
-                    Swal.fire('Gagal', 'Gagal update status.', 'error');
-                }
-            },
-            error: function() {
-                Swal.fire('Error', 'Gagal koneksi server.', 'error');
-            }
-        });
-
-    } else {
-        // Jika scan QR sembarangan (bukan QR Pintu)
-        // Kita beri feedback getar/suara kecil (opsional) atau alert
-        // Disini kita abaikan atau beri alert kecil agar user tahu itu bukan QR pintu
-        // Swal.fire({ title: 'QR Tidak Dikenali', text: 'Scan QR Pintu Masuk/Keluar', timer: 1000, showConfirmButton: false });
-    }
-}
-
-
-// ============================================================
-// 6. UTILITY (Download QR, Music, Copy)
+// 5. FITUR LAIN (QR DOWNLOAD, MUSIK, SALIN REK)
 // ============================================================
 function downloadQR() {
     const qrCanvas = document.querySelector('#qrcode canvas');
@@ -296,6 +208,7 @@ function downloadQR() {
         link.download = `QR_Wedding_${currentUserName}.png`;
         link.click();
     } else {
+        // Fallback img
         const qrImg = document.querySelector('#qrcode img');
         if(qrImg) {
             const link = document.createElement('a');
