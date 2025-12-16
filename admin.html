@@ -3,57 +3,199 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Admin - Penjaga Tamu</title>
+    <title>Admin Gatekeeper - Wedding</title>
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+
     <style>
-        body { background-color: #f4f4f4; font-family: sans-serif; }
-        .scanner-box { background: #000; border-radius: 10px; overflow: hidden; position: relative; }
-        .result-card { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-top: -30px; position: relative; z-index: 10; }
-        .status-badge { font-size: 0.8rem; padding: 5px 10px; border-radius: 5px; background: #eee; }
+        :root {
+            --gold: #b88746;
+            --gold-dark: #8c6635;
+            --bg-gray: #f0f2f5;
+        }
+
+        body {
+            background-color: var(--bg-gray);
+            font-family: 'Work Sans', sans-serif;
+            padding-bottom: 50px;
+        }
+
+        .navbar {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--gold) !important;
+        }
+
+        /* Card Styling */
+        .admin-card {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            background: white;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        /* Scanner Area */
+        .scanner-wrapper {
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            min-height: 250px;
+            border: 2px solid var(--gold);
+        }
+
+        #reader video {
+            object-fit: cover;
+            border-radius: 12px;
+        }
+
+        /* Result Panel */
+        .guest-avatar {
+            width: 80px;
+            height: 80px;
+            background-color: #f8f9fa;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            color: var(--gold);
+            border: 3px solid var(--gold);
+        }
+
+        .status-badge {
+            font-size: 0.9rem;
+            padding: 8px 15px;
+            border-radius: 50px;
+            font-weight: 600;
+            background-color: #e9ecef;
+            color: #495057;
+            display: inline-block;
+        }
+
+        /* Counter Input */
+        .counter-box {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .btn-circle {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .form-control-lg-custom {
+            border: none;
+            background: transparent;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--gold);
+        }
+
+        /* Action Buttons */
+        .btn-action {
+            border-radius: 12px;
+            padding: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: transform 0.2s;
+        }
+        .btn-action:active { transform: scale(0.98); }
+
+        .btn-gold-outline {
+            border: 2px solid var(--gold);
+            color: var(--gold);
+            font-weight: 600;
+        }
+        .btn-gold-outline:hover {
+            background: var(--gold);
+            color: white;
+        }
     </style>
 </head>
 <body>
 
-    <div class="container py-4" style="max-width: 500px;">
-        <h4 class="text-center mb-3 fw-bold"><i class="fa-solid fa-user-shield me-2"></i>Panel Penjaga</h4>
+    <nav class="navbar fixed-top">
+        <div class="container d-flex justify-content-center">
+            <span class="navbar-brand mb-0 h1">
+                <i class="fa-solid fa-shield-halved me-2"></i>Gatekeeper
+            </span>
+        </div>
+    </nav>
 
-        <div class="scanner-box mb-4">
-            <div id="reader" style="width: 100%;"></div>
+    <div class="container" style="max-width: 500px; margin-top: 80px;">
+        
+        <div class="admin-card p-3">
+            <h6 class="text-muted small fw-bold text-uppercase mb-3 text-center">Scan QR Code Tamu</h6>
+            <div class="scanner-wrapper">
+                <div id="reader" style="width: 100%;"></div>
+            </div>
+            <div id="manual-panel" class="text-center mt-3">
+                <button class="btn btn-sm btn-link text-muted text-decoration-none" onclick="inputManual()">
+                    <i class="fa-regular fa-keyboard me-1"></i> Input Kode Manual
+                </button>
+            </div>
         </div>
 
-        <div class="result-card" id="result-panel" style="display: none;">
+        <div class="admin-card p-4" id="result-panel" style="display: none;">
+            
             <div class="text-center">
-                <h5 class="fw-bold mb-1" id="tamu-nama">-</h5>
-                <p class="text-muted small mb-2" id="tamu-grup">-</p>
-                <span class="status-badge" id="tamu-status">Belum Check-in</span>
-                <hr>
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label small fw-bold">Jumlah Tamu Masuk:</label>
-                <div class="input-group">
-                    <button class="btn btn-outline-secondary" onclick="ubahJumlah(-1)">-</button>
-                    <input type="number" id="jumlah-input" class="form-control text-center" value="1" min="1" readonly>
-                    <button class="btn btn-outline-secondary" onclick="ubahJumlah(1)">+</button>
+                <div class="guest-avatar">
+                    <i class="fa-solid fa-user fa-2x"></i>
+                </div>
+                <h4 class="fw-bold mb-1" id="tamu-nama">Loading...</h4>
+                <p class="text-muted mb-2" id="tamu-grup">-</p>
+                <div id="tamu-status" class="status-badge">
+                    <i class="fa-solid fa-circle-info me-1"></i> Menunggu Data
                 </div>
             </div>
 
-            <div class="d-grid gap-2">
-                <button class="btn btn-success py-2" onclick="prosesData('IN')">
-                    <i class="fa-solid fa-check-circle me-2"></i> CHECK IN
-                </button>
-                <button class="btn btn-danger py-2" onclick="prosesData('OUT')">
-                    <i class="fa-solid fa-sign-out-alt me-2"></i> CHECK OUT
-                </button>
-                <button class="btn btn-secondary btn-sm mt-2" onclick="resetScanner()">Scan Baru</button>
-            </div>
-        </div>
+            <hr class="my-4" style="opacity: 0.1;">
 
-        <div class="text-center mt-4" id="manual-panel">
-            <p class="small text-muted">Scanner bermasalah?</p>
-            <button class="btn btn-outline-dark btn-sm" onclick="inputManual()">Input Kode Manual</button>
+            <div class="counter-box">
+                <label class="form-label small fw-bold text-muted d-block text-center mb-2">JUMLAH TAMU MASUK</label>
+                <div class="d-flex justify-content-between align-items-center">
+                    <button class="btn btn-outline-secondary btn-circle" onclick="ubahJumlah(-1)">-</button>
+                    <input type="number" id="jumlah-input" class="form-control form-control-lg-custom text-center" value="1" min="1" readonly>
+                    <button class="btn btn-outline-secondary btn-circle" onclick="ubahJumlah(1)">+</button>
+                </div>
+            </div>
+
+            <div class="row g-2">
+                <div class="col-6">
+                    <button class="btn btn-success w-100 btn-action" onclick="prosesData('IN')">
+                        <i class="fa-solid fa-door-open me-2"></i> Check In
+                    </button>
+                </div>
+                <div class="col-6">
+                    <button class="btn btn-danger w-100 btn-action" onclick="prosesData('OUT')">
+                        <i class="fa-solid fa-door-closed me-2"></i> Check Out
+                    </button>
+                </div>
+                <div class="col-12 mt-2">
+                    <button class="btn btn-light w-100 py-2 text-muted fw-bold" onclick="resetScanner()">
+                        <i class="fa-solid fa-rotate-right me-2"></i> Scan Tamu Lain
+                    </button>
+                </div>
+            </div>
         </div>
 
     </div>
@@ -66,7 +208,7 @@
         // ============================================
         // UPDATE LINK INI DENGAN LINK BARU KAMU
         // ============================================
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyoVVrzB3N0okeJp3Mel5ADwlk0ZIujvfEaXthNqgimjCCrMPoAeKdO1CyVldTy878F5A/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxoxPbGgO8SwxeuN2EYDXM-sNwKOy82Jia2YzLFWUas0mstqrNrPzWhIUOncianCaVr3Q/exec";
         
         let html5QrcodeScanner;
         let currentCode = "";
@@ -77,7 +219,7 @@
         });
 
         function startScanner() {
-            $('#result-panel').hide();
+            $('#result-panel').slideUp(); // Animasi tutup
             $('#manual-panel').show();
             
             // Hapus scanner lama jika ada error
@@ -95,7 +237,11 @@
 
         // 3. Cek Data Tamu ke Server
         function cekDataTamu(code) {
-            Swal.fire({ title: 'Mengecek...', didOpen: () => Swal.showLoading() });
+            Swal.fire({ 
+                title: 'Mencari Data...', 
+                text: 'Mohon tunggu sebentar',
+                didOpen: () => Swal.showLoading() 
+            });
 
             $.ajax({
                 url: SCRIPT_URL,
@@ -110,21 +256,26 @@
                         $('#tamu-nama').text(data.nama);
                         $('#tamu-grup').text(data.grup);
                         
-                        // Status Logika
-                        let statusText = data.status_terakhir ? data.status_terakhir : "Belum ada record";
-                        $('#tamu-status').text(statusText);
+                        // Status Logika & Styling Badge
+                        let statusText = data.status_terakhir ? data.status_terakhir : "Belum Check-in";
+                        $('#tamu-status').html(`<i class="fa-solid fa-clock-rotate-left me-1"></i> ${statusText}`);
                         
-                        // Reset input jumlah ke 1 (atau jumlah sebelumnya jika ada)
+                        // Reset input jumlah
                         $('#jumlah-input').val(data.jumlah_tamu || 1);
 
                         $('#manual-panel').hide();
-                        $('#result-panel').fadeIn();
+                        $('#result-panel').slideDown(); // Animasi buka
                     } else {
-                        Swal.fire('Error', 'Kode tidak ditemukan!', 'error').then(startScanner);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Tidak Ditemukan',
+                            text: 'QR Code tidak terdaftar di database.',
+                            confirmButtonColor: '#b88746'
+                        }).then(startScanner);
                     }
                 },
                 error: function() {
-                    Swal.fire('Error', 'Gagal koneksi', 'error').then(startScanner);
+                    Swal.fire('Error', 'Gagal koneksi internet', 'error').then(startScanner);
                 }
             });
         }
@@ -132,13 +283,18 @@
         // 4. Proses Check IN / OUT
         function prosesData(type) {
             let jumlah = $('#jumlah-input').val();
-            let pesan = (type === 'IN') ? `Check-in ${jumlah} orang?` : `Yakin Tamu Check-out?`;
+            let judul = (type === 'IN') ? "Konfirmasi Check-In" : "Konfirmasi Check-Out";
+            let pesan = (type === 'IN') ? `Input <b>${jumlah} orang</b> masuk?` : `Tamu ini akan keluar area?`;
+            let warnaBtn = (type === 'IN') ? '#198754' : '#dc3545';
 
             Swal.fire({
-                title: pesan,
+                title: judul,
+                html: pesan,
+                icon: 'question',
                 showCancelButton: true,
                 confirmButtonText: 'Ya, Proses',
-                confirmButtonColor: (type === 'IN' ? '#198754' : '#dc3545')
+                cancelButtonText: 'Batal',
+                confirmButtonColor: warnaBtn
             }).then((result) => {
                 if (result.isConfirmed) {
                     Swal.fire({ title: 'Menyimpan...', didOpen: () => Swal.showLoading() });
@@ -155,7 +311,13 @@
                         dataType: "json",
                         success: function(data) {
                             if (data.status === 'success') {
-                                Swal.fire('Sukses', data.message, 'success').then(resetScanner);
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Berhasil!',
+                                    text: data.message,
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                }).then(resetScanner);
                             } else {
                                 Swal.fire('Gagal', 'Terjadi kesalahan sistem', 'error');
                             }
@@ -182,7 +344,9 @@
             Swal.fire({
                 title: 'Input Kode Manual',
                 input: 'text',
+                inputPlaceholder: 'Contoh: NVAD21',
                 confirmButtonText: 'Cari',
+                confirmButtonColor: '#b88746',
                 showCancelButton: true
             }).then((res) => {
                 if (res.isConfirmed && res.value) {
