@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome Monitor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cormorant+Garamond:wght@600&family=Montserrat:wght@300;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0; padding: 0; width: 100vw; height: 100vh; overflow: hidden;
+            background: url('https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1920&auto=format&fit=crop');
+            background-size: cover; background-position: center;
+            display: flex; justify-content: center; align-items: center;
+            color: white; font-family: 'Montserrat', sans-serif;
+        }
+        .overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6); z-index: 1;
+        }
+        .content { position: relative; z-index: 2; text-align: center; width: 80%; }
+        
+        .welcome-text {
+            font-family: 'Great Vibes', cursive; font-size: 5rem; margin-bottom: 20px;
+            color: #e8d3b5; text-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+        .guest-name {
+            font-family: 'Cormorant Garamond', serif; font-size: 6rem; font-weight: 700;
+            line-height: 1.1; text-transform: uppercase; letter-spacing: 2px; margin: 0;
+            text-shadow: 0 5px 15px rgba(0,0,0,0.6); transition: all 0.5s ease-in-out;
+        }
+        .guest-group {
+            font-size: 2rem; font-weight: 300; margin-top: 15px; opacity: 0.9;
+        }
+        .divider {
+            height: 2px; width: 150px; background: #e8d3b5; margin: 50px auto; border-radius: 5px;
+        }
+        .info-label { font-size: 1.2rem; text-transform: uppercase; letter-spacing: 3px; opacity: 0.8; }
+        .counter-box { font-size: 4rem; font-weight: 700; }
+        #loading { position: absolute; z-index: 99; font-size: 1.5rem; }
+    </style>
+</head>
+<body>
+
+    <div class="overlay"></div>
+    <div id="loading">Menghubungkan ke Server...</div>
+
+    <div class="content" id="main-content" style="display: none;">
+        <div class="welcome-text">Selamat Datang</div>
+        
+        <h1 class="guest-name" id="display-name">Tamu Undangan</h1>
+        <p class="guest-group" id="display-group">-</p>
+
+        <div class="divider"></div>
+
+        <div class="info-label">Total Tamu Check-In</div>
+        <div class="counter-box"><span id="total-count">0</span></div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // ============================================
+        // PASTE LINK BARU SCRIPT KAMU DISINI
+        // ============================================
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzVoCsD2369Rii6kM15c1wYIVfev-9a2ysKe-oQM00R7R7bhV6ihT4dSCTYoGiM-tWYkw/exec";
+        
+        let lastKnownName = ""; // Nama terakhir yang didapat dari server
+        let resetTimer; // Variabel Timer
+
+        function fetchData() {
+            $.ajax({
+                url: SCRIPT_URL,
+                type: "GET",
+                data: { action: "get_monitor_data" },
+                dataType: "json",
+                success: function(data) {
+                    if (data.status === 'success') {
+                        $('#loading').hide();
+                        $('#main-content').fadeIn();
+                        $('#total-count').text(data.total);
+
+                        // LOGIKA 3 DETIK
+                        // Jika nama dari server BEDA dengan yang tersimpan terakhir
+                        // DAN namanya bukan "DEFAULT_RESET"
+                        if (data.nama !== lastKnownName && data.nama !== "DEFAULT_RESET") {
+                            
+                            // 1. Tampilkan Nama Baru
+                            updateDisplay(data.nama, data.grup);
+                            
+                            // 2. Simpan nama ini agar tidak refresh terus
+                            lastKnownName = data.nama;
+
+                            // 3. Reset Timer sebelumnya (kalau ada tamu masuk beruntun)
+                            clearTimeout(resetTimer);
+
+                            // 4. Set Timer Baru 3 Detik
+                            resetTimer = setTimeout(() => {
+                                // Balik ke Default
+                                updateDisplay("Tamu Undangan", ""); 
+                            }, 5000); // Saya kasih 5 detik biar lebih enak dibaca, ganti 3000 kalau mau 3 detik pas
+                        }
+                    }
+                },
+                error: function(err) { console.log("Koneksi Error", err); }
+            });
+        }
+
+        function updateDisplay(nama, grup) {
+            $('#display-name, #display-group').fadeOut(300, function() {
+                $('#display-name').text(nama).fadeIn(300);
+                $('#display-group').text(grup).fadeIn(300);
+            });
+        }
+
+        $(document).ready(function() {
+            fetchData();
+            // Cek setiap 2 detik
+            setInterval(fetchData, 2000); 
+        });
+    </script>
+</body>
+</html>

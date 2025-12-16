@@ -2,7 +2,7 @@
 // 1. KONFIGURASI UTAMA
 // ============================================================
 // Link API Google Apps Script (PASTIKAN LINK INI BENAR)
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxoxPbGgO8SwxeuN2EYDXM-sNwKOy82Jia2YzLFWUas0mstqrNrPzWhIUOncianCaVr3Q/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzVoCsD2369Rii6kM15c1wYIVfev-9a2ysKe-oQM00R7R7bhV6ihT4dSCTYoGiM-tWYkw/exec";
 
 // Variabel Global
 let currentUserCode = "";
