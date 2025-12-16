@@ -97,7 +97,7 @@
                             resetTimer = setTimeout(() => {
                                 // Balik ke Default
                                 updateDisplay("Tamu Undangan", ""); 
-                            }, 10000); // Saya kasih 5 detik biar lebih enak dibaca, ganti 3000 kalau mau 3 detik pas
+                            }, 15000); // Saya kasih 5 detik biar lebih enak dibaca, ganti 3000 kalau mau 3 detik pas
                         }
                     }
                 },
@@ -106,9 +106,9 @@
         }
 
         function updateDisplay(nama, grup) {
-            $('#display-name, #display-group').fadeOut(500, function() {
-                $('#display-name').text(nama).fadeIn(500);
-                $('#display-group').text(grup).fadeIn(500);
+            $('#display-name, #display-group').fadeOut(700, function() {
+                $('#display-name').text(nama).fadeIn(700);
+                $('#display-group').text(grup).fadeIn(700);
             });
         }
 
