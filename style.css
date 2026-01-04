@@ -20,20 +20,28 @@ body {
 .text-gold { color: var(--gold) !important; }
 .fw-bold { font-weight: 700 !important; }
 
-/* --- BACKGROUND PATTERN (SAKURA FIXED - RAPAT & BESAR) --- */
+/* --- BACKGROUND PATTERN (SAKURA FIXED & STABLE) --- */
 .pattern-overlay {
     position: absolute;
     top: 0; left: 0; width: 100%; height: 100%;
     z-index: 1;
-    opacity: 0.12; /* Sedikit lebih transparan agar tidak bertabrakan dengan teks */
     pointer-events: none;
     
-    /* SVG Sakura Baru: Lebih "Penuh" dan Rapat */
-    background-image: url("data:image/svg+xml,%3Csvg width='50' height='50' viewBox='0 0 50 50' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M25 25 C25 25 32 10 38 18 C44 26 32 32 25 25 M25 25 C25 25 40 32 32 40 C24 48 20 32 25 25 M25 25 C25 25 18 40 10 32 C2 24 18 32 25 25 M25 25 C25 25 10 18 18 10 C26 2 32 18 25 25 M25 25 C25 25 18 10 12 18 C6 26 18 25 25 25' fill='%23b88746' fill-rule='evenodd'/%3E%3C/svg%3E");
-    
-    /* Ukuran diperbesar jadi 100px (sebelumnya 80px) */
-    background-size: 100px 100px; 
+    /* Tingkat transparan pattern (semakin kecil semakin samar) */
+    opacity: 0.12; 
+
+    /* SVG Sakura Pattern yang Stabil.
+       Warna sudah disesuaikan dengan tema gold (#b88746).
+    */
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 30 C30 30 35 20 40 25 C45 30 35 35 30 30 M30 30 C30 30 40 35 35 40 C30 45 25 35 30 30 M30 30 C30 30 25 40 20 35 C15 30 25 25 30 30 M30 30 C30 30 20 25 25 20 C30 15 35 25 30 30' fill='%23b88746' fill-rule='evenodd'/%3E%3C/svg%3E");
+
+    /* Mengatur ukuran dan pengulangan pattern.
+       Ubah angka 100px jika ingin bunga terlihat lebih besar/kecil.
+    */
+    background-size: 100px 100px;
+    background-repeat: repeat;
 }
+
 
 /* --- SEKAT / PEMISAH SECTION (JP DIVIDER) --- */
 .jp-divider {
