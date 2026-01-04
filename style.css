@@ -4,45 +4,64 @@
     --cream-transparent: rgba(255, 255, 255, 0.95);
     --text-dark: #4a4a4a;
     --white: #ffffff;
-    --jp-pattern-color: rgba(184, 135, 70, 0.05); /* Warna pattern samar */
+    --jp-pattern-color: #d4a373; /* Warna pola */
 }
 
 body {
     font-family: 'Cormorant Garamond', serif;
     color: var(--text-dark);
     overflow-x: hidden;
-    background-color: #fcfbf9;
-    /* Ganti gambar bgutama dengan tekstur kertas halus jika ada, atau biarkan kosong */
-    background-image: none; 
+    background-color: #f9f7f2;
 }
 
 /* --- TYPOGRAPHY --- */
 .font-aesthetic { font-family: 'Great Vibes', cursive; }
-.font-serif { font-family: 'Noto Serif JP', serif; } /* Font baru untuk kutipan */
+.font-serif { font-family: 'Noto Serif JP', serif; } 
 .text-gold { color: var(--gold) !important; }
 .fw-bold { font-weight: 700 !important; }
 
-/* --- BACKGROUND PATTERN (SEIGAIHA STYLE) --- */
-/* Membuat pattern ombak jepang halus menggunakan CSS Gradient */
+/* --- BACKGROUND PATTERN (SEIGAIHA FIXED) --- */
+/* Menggunakan SVG Encoded agar motif ombak terlihat jelas di semua browser */
 .pattern-overlay {
     position: absolute;
     top: 0; left: 0; width: 100%; height: 100%;
     z-index: 1;
-    opacity: 1;
+    opacity: 0.07; /* Transparansi rendah agar elegan */
     pointer-events: none;
-    background-image: 
-        radial-gradient(circle at 100% 150%, var(--jp-pattern-color) 24%, rgba(255, 255, 255, 0) 25%),
-        radial-gradient(circle at 0% 150%, var(--jp-pattern-color) 24%, rgba(255, 255, 255, 0) 25%),
-        radial-gradient(circle at 50% 100%, var(--jp-pattern-color) 49%, rgba(255, 255, 255, 0) 50%),
-        radial-gradient(circle at 100% 50%, var(--jp-pattern-color) 14%, rgba(255, 255, 255, 0) 15%),
-        radial-gradient(circle at 0% 50%, var(--jp-pattern-color) 14%, rgba(255, 255, 255, 0) 15%),
-        radial-gradient(circle at 50% 50%, var(--jp-pattern-color) 29%, rgba(255, 255, 255, 0) 30%);
+    background-image: url("data:image/svg+xml,%3Csvg width='40' height='20' viewBox='0 0 40 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 0c11.046 0 20 8.954 20 20H0C0 8.954 8.954 0 20 0zm0 10c5.523 0 10 4.477 10 10H10c0-5.523 4.477-10 10-10zM0 0h40v20H0V0z' fill='%23b88746' fill-opacity='1' fill-rule='evenodd'/%3E%3C/svg%3E");
     background-size: 60px 30px;
+}
+
+/* --- SEKAT / PEMISAH SECTION (JP DIVIDER) --- */
+.jp-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 40px 0;
+    position: relative;
+}
+.jp-divider::before, .jp-divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background-color: var(--gold);
+    max-width: 150px;
+    margin: 0 15px;
+}
+.jp-divider span {
+    color: var(--gold);
+    font-size: 1.5rem;
+    background: #f9f7f2; /* Sesuai warna body */
+    padding: 0 10px;
+    border: 1px solid var(--gold);
+    border-radius: 50%;
+    width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
 }
 
 /* --- LAYOUT & SECTIONS --- */
 .content-section {
-    background-color: transparent; /* Biarkan pattern body terlihat atau pakai cream transparan */
+    background-color: transparent; 
     padding: 5rem 0;
     position: relative;
     margin: 0;
@@ -52,38 +71,35 @@ body {
 .polaroid-wrapper {
     position: relative;
     background: white;
-    padding: 15px 15px 50px 15px; /* Bottom padding lebih besar ala polaroid */
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-    transform: rotate(-2deg); /* Miring sedikit biar estetik */
+    padding: 15px 15px 50px 15px; 
+    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+    transform: rotate(-3deg); 
     transition: transform 0.3s ease;
     width: 100%;
-    max-width: 400px;
+    max-width: 380px;
     margin: 0 auto;
 }
-
 .polaroid-wrapper:hover {
     transform: rotate(0deg) scale(1.02);
+    z-index: 10;
 }
-
 .polaroid-photo img {
     width: 100%;
     height: auto;
-    filter: sepia(20%); /* Sedikit efek vintage */
+    filter: sepia(10%) contrast(1.1); 
     border: 1px solid #eee;
 }
 
 /* Efek Washi Tape (Selotip) */
 .washi-tape {
     position: absolute;
-    top: -15px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 120px;
-    height: 35px;
-    background-color: rgba(220, 200, 170, 0.7);
+    top: -15px; left: 50%; transform: translateX(-50%);
+    width: 130px; height: 40px;
+    background-color: rgba(220, 200, 170, 0.85);
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     z-index: 10;
-    opacity: 0.8;
+    /* Motif Washi Tape Sederhana */
+    background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.3) 10px, rgba(255,255,255,0.3) 20px);
 }
 
 /* --- COVER SECTION --- */
@@ -99,56 +115,42 @@ body {
     justify-content: center;
     transition: transform 1s ease-in-out;
 }
-
 #cover.open { transform: translateY(-100%); }
 
 .guest-box {
     background: rgba(255, 255, 255, 0.95);
     padding: 12px 30px;
-    border-radius: 4px; /* Kotak sedikit rounded ala Jepang */
+    border-radius: 4px;
     display: inline-block;
     color: var(--gold);
     font-size: 1.1rem;
     border: 1px solid var(--gold);
-    border-left: 5px solid var(--gold); /* Aksen di kiri */
+    border-left: 5px solid var(--gold);
 }
 
-/* --- ORNAMEN JEPANG --- */
-.gold-line-jp {
-    border-top: 1px solid var(--gold);
-    width: 100px; 
-    margin: 20px auto; 
-    opacity: 1;
-    position: relative;
+/* --- COUNTDOWN --- */
+.countdown-item {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    width: 80px;
+    border: 1px solid var(--gold-light);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
 }
-/* Menambah titik di tengah garis */
-.gold-line-jp::after {
-    content: '◆'; /* Simbol diamond sederhana */
-    color: var(--gold);
-    position: absolute;
-    top: -12px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #fcfbf9;
-    padding: 0 10px;
-    font-size: 10px;
-}
+.countdown-item span { display: block; line-height: 1; }
 
 /* --- BUTTONS --- */
 .btn-gold {
     background: var(--gold);
     color: white;
     border: none;
-    border-radius: 4px; /* Lebih kotak */
+    border-radius: 4px;
     transition: all 0.3s;
     text-transform: uppercase;
     letter-spacing: 1px;
     font-size: 0.9rem;
 }
-.btn-gold:hover {
-    background-color: #a0743b;
-    color: white;
-}
+.btn-gold:hover { background-color: #a0743b; color: white; transform: translateY(-2px); }
 .btn-outline-gold {
     border: 1px solid var(--gold);
     color: var(--gold);
@@ -157,34 +159,25 @@ body {
 }
 .btn-outline-gold:hover { background-color: var(--gold); color: white; }
 
-/* --- CARDS --- */
+/* --- CARDS & GALLERY --- */
 .gold-card {
     background: var(--white);
     padding: 40px 30px;
-    border-radius: 8px; /* Sudut halus tapi tegas */
+    border-radius: 8px;
     box-shadow: 0 15px 35px rgba(184, 135, 70, 0.08);
     border: 1px solid rgba(184, 135, 70, 0.2);
     position: relative;
     z-index: 2;
 }
-
-/* --- GALLERY --- */
 .gallery-item {
-    display: block;
-    overflow: hidden;
-    border-radius: 4px;
-    position: relative;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    display: block; overflow: hidden; border-radius: 4px;
+    position: relative; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
 .img-crop {
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    object-fit: cover;
+    width: 100%; aspect-ratio: 1 / 1; object-fit: cover;
     transition: transform 0.5s ease;
 }
-.gallery-item:hover .img-crop {
-    transform: scale(1.05);
-}
+.gallery-item:hover .img-crop { transform: scale(1.05); }
 
 /* --- MUSIC CONTROL --- */
 .music-box {
@@ -202,7 +195,9 @@ body {
 /* --- RESPONSIVE MOBILE --- */
 @media (max-width: 768px) {
     .display-1 { font-size: 3.5rem; }
+    .display-3 { font-size: 2.5rem; }
     .display-4 { font-size: 2.2rem; }
     .content-section { padding: 3rem 0; }
     .polaroid-wrapper { max-width: 280px; }
+    .jp-divider::before, .jp-divider::after { max-width: 80px; }
 }
