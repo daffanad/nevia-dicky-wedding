@@ -1,18 +1,26 @@
 :root {
     --gold: #b88746;
     --gold-light: #e8d3b5;
-    --cream-transparent: rgba(255, 255, 255, 0.95);
     --text-dark: #4a4a4a;
     --white: #ffffff;
-    --jp-pattern-color: #d4a373; 
 }
 
 body {
     font-family: 'Cormorant Garamond', serif;
     color: var(--text-dark);
     overflow-x: hidden;
-    background-color: #f9f7f2;
+    /* Warna kertas mewah */
+    background-color: #f9f7f2; 
 }
+
+/* --- SCROLLBAR --- */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #f1f1f1; }
+::-webkit-scrollbar-thumb { 
+    background: var(--gold); 
+    border-radius: 4px; 
+}
+::-webkit-scrollbar-thumb:hover { background: #8c6635; }
 
 /* --- TYPOGRAPHY --- */
 .font-aesthetic { font-family: 'Great Vibes', cursive; }
@@ -20,28 +28,17 @@ body {
 .text-gold { color: var(--gold) !important; }
 .fw-bold { font-weight: 700 !important; }
 
-/* --- BACKGROUND PATTERN (SAKURA FIXED & STABLE) --- */
+/* --- BACKGROUND PATTERN (PAPER TEXTURE) --- */
 .pattern-overlay {
     position: absolute;
     top: 0; left: 0; width: 100%; height: 100%;
     z-index: 1;
     pointer-events: none;
-    
-    /* Tingkat transparan pattern (semakin kecil semakin samar) */
-    opacity: 0.12; 
-
-    /* SVG Sakura Pattern yang Stabil.
-       Warna sudah disesuaikan dengan tema gold (#b88746).
-    */
-    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 30 C30 30 35 20 40 25 C45 30 35 35 30 30 M30 30 C30 30 40 35 35 40 C30 45 25 35 30 30 M30 30 C30 30 25 40 20 35 C15 30 25 25 30 30 M30 30 C30 30 20 25 25 20 C30 15 35 25 30 30' fill='%23b88746' fill-rule='evenodd'/%3E%3C/svg%3E");
-
-    /* Mengatur ukuran dan pengulangan pattern.
-       Ubah angka 100px jika ingin bunga terlihat lebih besar/kecil.
-    */
-    background-size: 100px 100px;
+    opacity: 0.4;
+    /* Tekstur Kertas Halus */
+    background-image: url("https://www.transparenttextures.com/patterns/cream-paper.png");
     background-repeat: repeat;
 }
-
 
 /* --- SEKAT / PEMISAH SECTION (JP DIVIDER) --- */
 .jp-divider {
@@ -50,14 +47,16 @@ body {
     justify-content: center;
     margin: 40px 0;
     position: relative;
+    z-index: 5;
 }
 .jp-divider::before, .jp-divider::after {
     content: "";
     flex: 1;
     height: 1px;
     background-color: var(--gold);
-    max-width: 150px;
+    max-width: 120px;
     margin: 0 15px;
+    opacity: 0.5;
 }
 .jp-divider span {
     color: var(--gold);
@@ -66,7 +65,7 @@ body {
     padding: 0 10px;
     border: 1px solid var(--gold);
     border-radius: 50%;
-    width: 40px; height: 40px;
+    width: 45px; height: 45px;
     display: flex; align-items: center; justify-content: center;
 }
 
@@ -83,7 +82,7 @@ body {
     position: relative;
     background: white;
     padding: 15px 15px 50px 15px; 
-    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
     transform: rotate(-3deg); 
     transition: transform 0.3s ease;
     width: 100%;
@@ -101,7 +100,7 @@ body {
     border: 1px solid #eee;
 }
 
-/* Efek Washi Tape (Selotip) */
+/* Efek Washi Tape */
 .washi-tape {
     position: absolute;
     top: -15px; left: 50%; transform: translateX(-50%);
@@ -109,8 +108,20 @@ body {
     background-color: rgba(220, 200, 170, 0.85);
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     z-index: 10;
-    /* Motif Washi Tape */
     background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.3) 10px, rgba(255,255,255,0.3) 20px);
+}
+
+/* --- CARDS (GLASSMORPHISM) --- */
+.gold-card {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 40px 30px;
+    border-radius: 16px;
+    box-shadow: 0 15px 35px rgba(184, 135, 70, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    position: relative;
+    z-index: 2;
 }
 
 /* --- COVER SECTION --- */
@@ -130,58 +141,55 @@ body {
 
 .guest-box {
     background: rgba(255, 255, 255, 0.95);
-    padding: 12px 30px;
-    border-radius: 4px;
+    padding: 12px 35px;
+    border-radius: 50px; /* Lebih rounded */
     display: inline-block;
     color: var(--gold);
     font-size: 1.1rem;
     border: 1px solid var(--gold);
-    border-left: 5px solid var(--gold);
 }
-
-/* --- COUNTDOWN --- */
-.countdown-item {
-    background: white;
-    padding: 15px;
-    border-radius: 8px;
-    width: 80px;
-    border: 1px solid var(--gold-light);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-}
-.countdown-item span { display: block; line-height: 1; }
 
 /* --- BUTTONS --- */
 .btn-gold {
     background: var(--gold);
     color: white;
     border: none;
-    border-radius: 4px;
-    transition: all 0.3s;
+    border-radius: 50px; /* Pill Shape */
+    padding: 12px 30px;
+    transition: all 0.3s ease;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    font-size: 0.9rem;
+    letter-spacing: 1.5px;
+    font-size: 0.85rem;
+    box-shadow: 0 5px 15px rgba(184, 135, 70, 0.4);
 }
-.btn-gold:hover { background-color: #a0743b; color: white; transform: translateY(-2px); }
+.btn-gold:hover {
+    background-color: #a0743b;
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(184, 135, 70, 0.6);
+}
 .btn-outline-gold {
     border: 1px solid var(--gold);
     color: var(--gold);
     font-weight: 600;
-    border-radius: 4px;
+    border-radius: 50px;
 }
 .btn-outline-gold:hover { background-color: var(--gold); color: white; }
 
-/* --- CARDS & GALLERY --- */
-.gold-card {
-    background: var(--white);
-    padding: 40px 30px;
-    border-radius: 8px;
-    box-shadow: 0 15px 35px rgba(184, 135, 70, 0.08);
+/* --- COUNTDOWN --- */
+.countdown-item {
+    background: rgba(255,255,255,0.9);
+    padding: 15px;
+    border-radius: 12px;
+    width: 85px;
     border: 1px solid rgba(184, 135, 70, 0.2);
-    position: relative;
-    z-index: 2;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
 }
+.countdown-item span { display: block; line-height: 1; }
+
+/* --- GALLERY --- */
 .gallery-item {
-    display: block; overflow: hidden; border-radius: 4px;
+    display: block; overflow: hidden; border-radius: 8px;
     position: relative; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
 .img-crop {
@@ -192,7 +200,7 @@ body {
 
 /* --- MUSIC CONTROL --- */
 .music-box {
-    position: fixed; bottom: 20px; right: 20px; z-index: 999;
+    position: fixed; bottom: 85px; right: 20px; z-index: 999;
     background: white; padding: 10px; border-radius: 50%;
     box-shadow: 0 4px 15px rgba(197, 160, 89, 0.3);
     cursor: pointer; border: 1px solid var(--gold);
@@ -203,6 +211,23 @@ body {
 .paused-disk { animation-play-state: paused; }
 @keyframes spin { 100% { transform: rotate(360deg); } }
 
+/* --- BOTTOM NAV (MOBILE) --- */
+.mobile-nav {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(5px);
+    padding: 10px 25px;
+    border-radius: 50px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    display: flex; gap: 25px; z-index: 1000;
+    border: 1px solid rgba(184, 135, 70, 0.2);
+}
+.mobile-nav a {
+    text-align: center; color: var(--text-dark); text-decoration: none;
+    font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1px;
+}
+.mobile-nav i { font-size: 1.1rem; color: var(--gold); margin-bottom: 2px; display: block; }
+
 /* --- RESPONSIVE MOBILE --- */
 @media (max-width: 768px) {
     .display-1 { font-size: 3.5rem; }
@@ -210,5 +235,9 @@ body {
     .display-4 { font-size: 2.2rem; }
     .content-section { padding: 3rem 0; }
     .polaroid-wrapper { max-width: 280px; }
-    .jp-divider::before, .jp-divider::after { max-width: 80px; }
+    .jp-divider::before, .jp-divider::after { max-width: 60px; }
+    
+    /* Hide scrollbar on mobile */
+    ::-webkit-scrollbar { width: 0px; }
+    body { padding-bottom: 80px; } /* Space for nav */
 }
