@@ -20,15 +20,15 @@ body {
 .text-gold { color: var(--gold) !important; }
 .fw-bold { font-weight: 700 !important; }
 
-/* --- BACKGROUND PATTERN (SAKURA STYLE) --- */
-/* Menggunakan SVG Bunga Sakura yang estetik */
+/* --- BACKGROUND PATTERN (SAKURA FIXED) --- */
+/* Menggunakan SVG Bunga Sakura 5 Kelopak yang lebih jelas */
 .pattern-overlay {
     position: absolute;
     top: 0; left: 0; width: 100%; height: 100%;
     z-index: 1;
-    opacity: 0.1; /* Transparansi rendah agar elegan */
+    opacity: 0.15; /* Sedikit lebih terlihat */
     pointer-events: none;
-    background-image: url("data:image/svg+xml,%3Csvg width='52' height='52' viewBox='0 0 52 52' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M26 26c0-5 5-10 10-10s5 5 0 10-10 5-10-5-5-5 0-10 5 5 10 10z' fill='%23b88746' fill-rule='nonzero'/%3E%3Cpath d='M10 10c0-2 2-4 4-4s2 2 0 4-4 2-4-2-2-2 0-4 2 2 4 4z' fill='%23b88746' fill-rule='nonzero'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 30 C30 30 35 20 40 25 C45 30 35 35 30 30 M30 30 C30 30 40 35 35 40 C30 45 25 35 30 30 M30 30 C30 30 25 40 20 35 C15 30 25 25 30 30 M30 30 C30 30 20 25 25 20 C30 15 35 25 30 30' fill='%23b88746' fill-rule='evenodd'/%3E%3C/svg%3E");
     background-size: 80px 80px;
 }
 
@@ -51,7 +51,7 @@ body {
 .jp-divider span {
     color: var(--gold);
     font-size: 1.5rem;
-    background: #f9f7f2; /* Sesuai warna body */
+    background: #f9f7f2;
     padding: 0 10px;
     border: 1px solid var(--gold);
     border-radius: 50%;
