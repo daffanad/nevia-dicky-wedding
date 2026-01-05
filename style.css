@@ -344,106 +344,100 @@ body {
     color: var(--text-dark);
 }
 
-/* --- LIVE STREAMING UI (REVISI LAYOUT) --- */
-.live-broadcast-box {
+/* --- LIVE STREAMING PREMIUM UI --- */
+.live-box-premium {
     background: #ffffff;
     border: 1px solid var(--gold-light);
-    border-radius: 15px;
-    padding: 25px 30px;
-    box-shadow: 0 10px 30px rgba(184, 135, 70, 0.1);
+    border-radius: 20px; /* Sudut membulat */
+    padding: 30px 40px;
+    box-shadow: 0 10px 30px rgba(184, 135, 70, 0.08); /* Bayangan halus */
     position: relative;
     overflow: hidden;
-    display: flex;
-    flex-direction: column; /* Susun vertikal (Judul di atas, Konten di bawah) */
 }
 
-/* Garis tipis di bawah judul biar rapi (Opsional) */
-.border-bottom-gold {
-    border-bottom: 1px solid rgba(184, 135, 70, 0.2);
-    padding-bottom: 10px;
-    margin-bottom: 20px;
+/* Header Judul (Rata Kanan) */
+.live-header {
+    text-align: right;
+    margin-bottom: 10px;
+}
+.live-header h2 {
+    font-size: 2.5rem; /* Ukuran font judul */
+    margin-bottom: 0;
 }
 
-/* Wrapper untuk Icon dan Teks biar sebelahan */
-.live-content-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 25px; /* Jarak antara Icon dan Teks */
+/* Garis Pemisah */
+.live-divider {
+    border: 0;
+    height: 1px;
+    background: rgba(184, 135, 70, 0.3); /* Warna emas transparan */
+    margin: 0 0 25px 0;
 }
 
-/* Bagian Icon (Kiri) */
-.live-icon-area {
+/* Wrapper Icon */
+.live-icon-wrapper {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    min-width: 80px;
+    min-width: 80px; /* Lebar area ikon tetap */
 }
 
+/* Lingkaran Pink */
 .icon-circle {
-    width: 60px; height: 60px;
-    background: #fff0f0;
+    width: 70px;
+    height: 70px;
+    background-color: #fff5f5; /* Pink sangat muda */
     border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    margin-bottom: 8px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.icon-circle i {
+    font-size: 2rem; /* Ukuran logo youtube */
 }
 
-/* Badge LIVE Berkedip */
+/* Badge LIVE Merah */
 .badge-live {
-    background: red;
+    background-color: #dc3545; /* Merah */
     color: white;
-    font-size: 0.6rem;
-    font-weight: bold;
-    padding: 3px 10px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 3px 12px;
     border-radius: 4px;
     letter-spacing: 1px;
-    animation: blinkLive 1.5s infinite;
+    box-shadow: 0 2px 5px rgba(220, 53, 69, 0.3);
 }
 
-@keyframes blinkLive {
-    0% { opacity: 1; }
-    50% { opacity: 0.5; }
-    100% { opacity: 1; }
-}
-
-/* Bagian Teks (Kanan) */
-.live-info-area {
-    flex: 1;
-}
-
+/* Nama Channel */
 .channel-name {
-    font-weight: 800;
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 700;
+    letter-spacing: 2px;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--text-dark);
-    margin-top: 5px;
-    margin-bottom: 0;
-    font-size: 1.2rem;
-    background: linear-gradient(to right, var(--gold-dark), var(--gold));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    font-size: 1.5rem;
 }
 
-/* Responsive Mobile */
+/* --- RESPONSIVE (Tampilan HP) --- */
 @media (max-width: 768px) {
-    .live-content-wrapper {
-        flex-direction: row; /* Tetap sebelahan di HP */
+    .live-box-premium {
+        padding: 25px 20px;
+        text-align: center;
+    }
+    
+    .live-header {
+        text-align: center; /* Judul jadi tengah di HP */
+    }
+    
+    .live-content {
+        flex-direction: column; /* Icon di atas teks */
         gap: 15px;
-        align-items: flex-start; /* Rata atas biar rapi kalau teks panjang */
     }
     
-    .live-broadcast-box {
-        padding: 20px;
+    .live-icon-wrapper {
+        margin-right: 0 !important;
+        margin-bottom: 10px;
     }
     
-    .icon-circle {
-        width: 50px; height: 50px;
+    .live-text-wrapper {
+        text-align: center !important;
     }
-    
-    .fa-2x { font-size: 1.5em; } /* Kecilkan icon youtube di HP */
-    
-    .channel-name { font-size: 1rem; }
-    
-    .live-info-area p { font-size: 0.85rem; }
 }
