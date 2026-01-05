@@ -343,3 +343,80 @@ body {
     letter-spacing: 1px; /* Sedikit jarak antar huruf */
     color: var(--text-dark);
 }
+
+/* --- LIVE STREAMING NEW UI (BROADCAST STYLE) --- */
+.live-broadcast-box {
+    background: #ffffff;
+    border: 1px solid var(--gold-light);
+    border-left: 5px solid var(--gold); /* Aksen emas di kiri */
+    border-radius: 15px;
+    padding: 25px;
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    box-shadow: 0 10px 30px rgba(184, 135, 70, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Bagian Kiri (Icon) */
+.live-icon-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 80px;
+}
+
+.icon-circle {
+    width: 60px; height: 60px;
+    background: #fff0f0;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 5px;
+}
+
+/* Badge LIVE Berkedip */
+.badge-live {
+    background: red;
+    color: white;
+    font-size: 0.6rem;
+    font-weight: bold;
+    padding: 2px 8px;
+    border-radius: 4px;
+    animation: blinkLive 1.5s infinite;
+}
+
+@keyframes blinkLive {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+/* Bagian Kanan (Teks) */
+.live-info-area {
+    text-align: left;
+    flex: 1;
+}
+
+.channel-name {
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-dark);
+    margin: 0;
+    background: linear-gradient(to right, var(--gold-dark), var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Responsive Mobile untuk Live Stream */
+@media (max-width: 768px) {
+    .live-broadcast-box {
+        flex-direction: column;
+        text-align: center;
+        padding: 30px 20px;
+        gap: 15px;
+    }
+    .live-info-area { text-align: center; }
+}
