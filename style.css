@@ -335,7 +335,7 @@ body {
 
 /* --- CUSTOM FONT UNTUK JAM --- */
 .time-font {
-    font-family: 'Playfair Display', serif; /* Menggunakan font yang sama dengan tanggal */
+    font-family: 'EB Garamond', serif; /* Menggunakan font yang sama dengan tanggal */
     font-size: 1.1rem; /* Ukuran sedikit dibesarkan agar jelas */
     letter-spacing: 1px; /* Sedikit jarak antar huruf */
     color: var(--text-dark);
