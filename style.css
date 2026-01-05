@@ -1,3 +1,6 @@
+/* --- IMPORT FONT BARU (PLAYFAIR DISPLAY) --- */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap');
+
 :root {
     /* PALET WARNA MEWAH */
     --gold: #b88746;
@@ -49,11 +52,11 @@ body {
     background-color: transparent;
 }
 
-/* --- DATE DISPLAY STYLING (Layout Baru) --- */
+/* --- DATE DISPLAY STYLING (FONT BARU: PLAYFAIR DISPLAY) --- */
 .date-wrapper {
     border-top: 1px solid var(--gold-light);
     border-bottom: 1px solid var(--gold-light);
-    padding: 15px 0;
+    padding: 20px 0;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -61,25 +64,29 @@ body {
 }
 
 .date-month {
-    font-size: 1.1rem;
-    letter-spacing: 4px;
+    font-family: 'Playfair Display', serif; /* Font Baru */
+    font-size: 1.2rem;
+    letter-spacing: 5px; /* Dibuat lebih renggang biar elegan */
     text-transform: uppercase;
     color: var(--text-dark);
+    font-weight: 600;
 }
 
 .date-day {
-    font-size: 5rem;
-    font-weight: 700;
+    font-family: 'Playfair Display', serif; /* Font Baru */
+    font-size: 5.5rem;
+    font-weight: 700; /* Lebih tebal */
     line-height: 1;
     color: var(--gold-dark);
     margin: 5px 0;
-    font-family: 'Cormorant Garamond', serif;
 }
 
 .date-year {
-    font-size: 1.2rem;
-    letter-spacing: 2px;
+    font-family: 'Playfair Display', serif; /* Font Baru */
+    font-size: 1.3rem;
+    letter-spacing: 3px;
     color: var(--text-dark);
+    font-weight: 600;
 }
 
 /* --- SEKAT / PEMISAH SECTION --- */
@@ -189,7 +196,6 @@ body {
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
 }
 
-
 /* --- COUNTDOWN --- */
 .countdown-item {
     background: white;
@@ -282,33 +288,23 @@ body {
 ::-webkit-scrollbar-thumb { background: var(--gold-light); border-radius: 10px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--gold); }
 
-/* --- RESPONSIVE MOBILE (DIPERBAIKI) --- */
+/* --- RESPONSIVE MOBILE --- */
 @media (max-width: 768px) {
-    /* 1. Judul Cover */
     .display-1 { font-size: 3rem; }
-    
-    /* 2. Judul Section */
     .display-4 { font-size: 1.8rem; }
-    
-    /* 3. Padding Section */
     .content-section { padding: 3rem 0; }
-    
-    /* 4. Ukuran Polaroid */
     .polaroid-wrapper { max-width: 260px; }
-    
-    /* 5. Kartu Undangan */
     .gold-card { padding: 30px 20px; }
     
-    /* 6. Angka Tanggal (Layout Baru) */
-    .date-day { font-size: 3.5rem; }
+    /* Font angka di HP agak dikecilkan biar tidak patah */
+    .date-day { font-size: 4rem; }
 
-    /* 7. Perbaikan Teks Intro (Agar tidak kebesaran di HP) */
     #intro .fs-5 { 
-        font-size: 0.95rem !important; 
+        font-size: 0.8rem !important; 
         line-height: 1.6;
     }
     #intro .lead {
-        font-size: 0.9rem !important;
+        font-size: 0.8rem !important;
         line-height: 1.6;
         padding: 0 15px;
     }
