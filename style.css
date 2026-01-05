@@ -441,3 +441,19 @@ body {
         text-align: center !important;
     }
 }
+
+/* --- EFEK KLIK LIVE STREAM --- */
+.live-link-hover {
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
+
+.live-link-hover:hover {
+    transform: scale(1.1); /* Membesar sedikit saat disentuh */
+    cursor: pointer;
+}
+
+/* Pastikan warna teks tetap putih/sesuai */
+.live-link-hover .badge-live {
+    color: white !important;
+}
