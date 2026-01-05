@@ -288,29 +288,55 @@ body {
 ::-webkit-scrollbar-thumb { background: var(--gold-light); border-radius: 10px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--gold); }
 
-/* --- RESPONSIVE MOBILE --- */
+/* --- RESPONSIVE MOBILE (UPDATE FINAL) --- */
 @media (max-width: 768px) {
+    /* 1. Judul Cover */
     .display-1 { font-size: 3rem; }
+    
+    /* 2. Judul Section */
     .display-4 { font-size: 1.8rem; }
+    
+    /* 3. Padding Section */
     .content-section { padding: 3rem 0; }
+    
+    /* 4. Ukuran Polaroid */
     .polaroid-wrapper { max-width: 260px; }
+    
+    /* 5. Kartu Undangan */
     .gold-card { padding: 30px 20px; }
     
-    /* Font angka di HP agak dikecilkan biar tidak patah */
-    .date-day { font-size: 4rem; }
+    /* 6. Angka Tanggal */
+    .date-day { font-size: 3.5rem; }
 
+    /* --- PENGATURAN FONT INTRO --- */
+    
+    /* Ayat Al-Quran: Dibuat KECIL & Rapi */
     #intro .fs-5 { 
         font-size: 0.8rem !important; 
-        line-height: 1.6;
+        line-height: 1.5;
     }
+
+    /* Teks "Kami Mengundang...": Ukuran NORMAL/JELAS (Tidak Dikecilkan) */
     #intro .lead {
-        font-size: 0.8rem !important;
+        font-size: 1.1rem !important; /* Ukuran standar enak dibaca */
         line-height: 1.6;
-        padding: 0 15px;
+        padding: 0 5px;
     }
+
+    /* Nama Mempelai: Tetap BESAR & Jelas */
     .couple-names .display-3 {
-        font-size: 2.2rem !important; 
-        margin-bottom: 5px;
+        font-size: 2.5rem !important; /* Ukuran besar agar terbaca jelas */
+        margin-bottom: 10px;
     }
-    .flower-divider h1 { font-size: 1.5rem !important; }
+    
+    /* Simbol '&' */
+    .flower-divider h1 { font-size: 2rem !important; }
+}
+
+/* --- CUSTOM FONT UNTUK JAM --- */
+.time-font {
+    font-family: 'Playfair Display', serif; /* Menggunakan font yang sama dengan tanggal */
+    font-size: 1.1rem; /* Ukuran sedikit dibesarkan agar jelas */
+    letter-spacing: 1px; /* Sedikit jarak antar huruf */
+    color: var(--text-dark);
 }
