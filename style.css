@@ -344,22 +344,34 @@ body {
     color: var(--text-dark);
 }
 
-/* --- LIVE STREAMING NEW UI (BROADCAST STYLE) --- */
+/* --- LIVE STREAMING UI (REVISI LAYOUT) --- */
 .live-broadcast-box {
     background: #ffffff;
     border: 1px solid var(--gold-light);
-    border-left: 5px solid var(--gold); /* Aksen emas di kiri */
     border-radius: 15px;
-    padding: 25px;
-    display: flex;
-    align-items: center;
-    gap: 25px;
+    padding: 25px 30px;
     box-shadow: 0 10px 30px rgba(184, 135, 70, 0.1);
     position: relative;
     overflow: hidden;
+    display: flex;
+    flex-direction: column; /* Susun vertikal (Judul di atas, Konten di bawah) */
 }
 
-/* Bagian Kiri (Icon) */
+/* Garis tipis di bawah judul biar rapi (Opsional) */
+.border-bottom-gold {
+    border-bottom: 1px solid rgba(184, 135, 70, 0.2);
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+/* Wrapper untuk Icon dan Teks biar sebelahan */
+.live-content-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 25px; /* Jarak antara Icon dan Teks */
+}
+
+/* Bagian Icon (Kiri) */
 .live-icon-area {
     display: flex;
     flex-direction: column;
@@ -373,7 +385,8 @@ body {
     background: #fff0f0;
     border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
 }
 
 /* Badge LIVE Berkedip */
@@ -382,8 +395,9 @@ body {
     color: white;
     font-size: 0.6rem;
     font-weight: bold;
-    padding: 2px 8px;
+    padding: 3px 10px;
     border-radius: 4px;
+    letter-spacing: 1px;
     animation: blinkLive 1.5s infinite;
 }
 
@@ -393,9 +407,8 @@ body {
     100% { opacity: 1; }
 }
 
-/* Bagian Kanan (Teks) */
+/* Bagian Teks (Kanan) */
 .live-info-area {
-    text-align: left;
     flex: 1;
 }
 
@@ -404,19 +417,33 @@ body {
     text-transform: uppercase;
     letter-spacing: 1px;
     color: var(--text-dark);
-    margin: 0;
+    margin-top: 5px;
+    margin-bottom: 0;
+    font-size: 1.2rem;
     background: linear-gradient(to right, var(--gold-dark), var(--gold));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
-/* Responsive Mobile untuk Live Stream */
+/* Responsive Mobile */
 @media (max-width: 768px) {
-    .live-broadcast-box {
-        flex-direction: column;
-        text-align: center;
-        padding: 30px 20px;
+    .live-content-wrapper {
+        flex-direction: row; /* Tetap sebelahan di HP */
         gap: 15px;
+        align-items: flex-start; /* Rata atas biar rapi kalau teks panjang */
     }
-    .live-info-area { text-align: center; }
+    
+    .live-broadcast-box {
+        padding: 20px;
+    }
+    
+    .icon-circle {
+        width: 50px; height: 50px;
+    }
+    
+    .fa-2x { font-size: 1.5em; } /* Kecilkan icon youtube di HP */
+    
+    .channel-name { font-size: 1rem; }
+    
+    .live-info-area p { font-size: 0.85rem; }
 }
