@@ -355,9 +355,9 @@ body {
     overflow: hidden;
 }
 
-/* Header Judul (Rata Kanan) */
+/* Header Judul  */
 .live-header {
-    text-align: right;
+    text-align: left;
     margin-bottom: 10px;
 }
 .live-header h2 {
