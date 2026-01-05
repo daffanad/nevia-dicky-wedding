@@ -316,12 +316,14 @@ body {
         line-height: 1.5;
     }
 
-    /* Teks "Kami Mengundang...": Ukuran NORMAL/JELAS (Tidak Dikecilkan) */
+/* Teks "Kami Mengundang...": Ukuran NORMAL/JELAS (Tidak Dikecilkan) */
     #intro .lead {
-        font-size: 1.1rem !important; /* Ukuran standar enak dibaca */
+        font-size: 1.1rem !important; 
         line-height: 1.6;
         padding: 0 5px;
-        margin-bottom: 10px;
+        
+        /* TAMBAHKAN INI UNTUK JARAK KE BAWAH */
+        margin-bottom: 50px !important; /* Semakin besar angkanya, semakin jauh jaraknya */
     }
 
     /* Nama Mempelai: Tetap BESAR & Jelas */
