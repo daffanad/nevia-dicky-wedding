@@ -23,20 +23,33 @@ body {
 .text-gold { color: var(--gold) !important; }
 .fw-bold { font-weight: 700 !important; }
 
-/* --- BACKGROUND PATTERN: LINEN PAPER TEXTURE --- */
+/* --- BACKGROUND PATTERN: LINEN PAPER TEXTURE (MURNI CSS) --- */
 .pattern-overlay {
     position: absolute;
     top: 0; left: 0; width: 100%; height: 100%;
     z-index: 0;
-    opacity: 0.12; 
+    opacity: 0.6; /* Transparansi tekstur kertas */
     pointer-events: none;
-    /* MOTIF SAKURA YANG STABIL */
-    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 30 C30 30 35 20 40 25 C45 30 35 35 30 30 M30 30 C30 30 40 35 35 40 C30 45 25 35 30 30 M30 30 C30 30 25 40 20 35 C15 30 25 25 30 30 M30 30 C30 30 20 25 25 20 C30 15 35 25 30 30' fill='%23b88746' fill-rule='evenodd'/%3E%3C/svg%3E");
-    background-size: 100px 100px;
-    background-repeat: repeat;
+    
+    /* Efek serat kertas diagonal */
+    background-image: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 2px,
+        rgba(184, 135, 70, 0.03) 2px,
+        rgba(184, 135, 70, 0.03) 4px
+    ),
+    repeating-linear-gradient(
+        -45deg,
+        transparent,
+        transparent 2px,
+        rgba(184, 135, 70, 0.03) 2px,
+        rgba(184, 135, 70, 0.03) 4px
+    );
+    background-color: transparent;
 }
 
-/* --- DATE DISPLAY STYLING --- */
+/* --- DATE DISPLAY STYLING (Layout Baru) --- */
 .date-wrapper {
     border-top: 1px solid var(--gold-light);
     border-bottom: 1px solid var(--gold-light);
@@ -149,7 +162,7 @@ body {
     background-image: repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(255,255,255,0.5) 2px, rgba(255,255,255,0.5) 4px);
 }
 
-/* --- COVER SECTION --- */
+/* --- COVER SECTION (Parallax) --- */
 #cover {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100vh;
@@ -174,6 +187,14 @@ body {
     font-size: 1.2rem;
     border: 1px solid var(--gold);
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+/* --- ORNAMEN ATAS COVER --- */
+.jp-ornament-top {
+    width: 2px;
+    height: 60px;
+    background: linear-gradient(to bottom, transparent, white);
+    margin: 0 auto 20px auto;
 }
 
 /* --- COUNTDOWN --- */
@@ -223,7 +244,7 @@ body {
 }
 .btn-outline-gold:hover { background-color: var(--gold); color: white; }
 
-/* --- CARDS (Glassmorphism Effect) --- */
+/* --- CARDS (Glassmorphism) --- */
 .gold-card {
     background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(10px); 
@@ -262,15 +283,21 @@ body {
 .paused-disk { animation-play-state: paused; }
 @keyframes spin { 100% { transform: rotate(360deg); } }
 
-/* --- RESPONSIVE MOBILE (BAGIAN YANG DIPERBAIKI) --- */
+/* --- SCROLLBAR CUSTOM --- */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #f1f1f1; }
+::-webkit-scrollbar-thumb { background: var(--gold-light); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--gold); }
+
+/* --- RESPONSIVE MOBILE (DIPERBAIKI) --- */
 @media (max-width: 768px) {
     /* 1. Judul Cover */
     .display-1 { font-size: 3rem; }
     
-    /* 2. Judul Section (Save The Date, dll) */
+    /* 2. Judul Section */
     .display-4 { font-size: 1.8rem; }
     
-    /* 3. Padding Section biar ga terlalu lebar di HP */
+    /* 3. Padding Section */
     .content-section { padding: 3rem 0; }
     
     /* 4. Ukuran Polaroid */
@@ -279,36 +306,22 @@ body {
     /* 5. Kartu Undangan */
     .gold-card { padding: 30px 20px; }
     
-    /* 6. Angka Tanggal (16, 18) */
+    /* 6. Angka Tanggal (Layout Baru) */
     .date-day { font-size: 3.5rem; }
 
-    /* --- UPDATE BARU: MENGECILKAN TEKS --- */
-    
-    /* Ayat Al-Quran & Nama Orang Tua (asalnya fs-5) */
+    /* 7. Perbaikan Teks Intro (Agar tidak kebesaran di HP) */
     #intro .fs-5 { 
         font-size: 0.95rem !important; 
         line-height: 1.6;
     }
-
-    /* Teks Undangan "Kami mengundang Anda..." (asalnya .lead) */
     #intro .lead {
         font-size: 0.9rem !important;
         line-height: 1.6;
-        padding: 0 15px; /* Tambah jarak kiri kanan */
+        padding: 0 15px;
     }
-
-    /* Nama Mempelai (Nevia & Dicky) */
     .couple-names .display-3 {
-        font-size: 2.2rem !important; /* Dikecilkan dari default desktop */
+        font-size: 2.2rem !important; 
         margin-bottom: 5px;
     }
-    
-    /* Simbol & di antara nama */
     .flower-divider h1 { font-size: 1.5rem !important; }
 }
-
-/* --- SCROLLBAR CUSTOM --- */
-::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-track { background: #f1f1f1; }
-::-webkit-scrollbar-thumb { background: var(--gold-light); border-radius: 10px; }
-::-webkit-scrollbar-thumb:hover { background: var(--gold); }
