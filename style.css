@@ -189,13 +189,6 @@ body {
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
 }
 
-/* --- ORNAMEN ATAS COVER --- */
-.jp-ornament-top {
-    width: 2px;
-    height: 60px;
-    background: linear-gradient(to bottom, transparent, white);
-    margin: 0 auto 20px auto;
-}
 
 /* --- COUNTDOWN --- */
 .countdown-item {
