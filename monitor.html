@@ -4,26 +4,47 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome Monitor</title>
-    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cormorant+Garamond:wght@600&family=Montserrat:wght@300;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cormorant+Garamond:wght@400;600;700&family=Montserrat:wght@300;700&display=swap" rel="stylesheet">
 
     <style>
         body {
             margin: 0; padding: 0; width: 100vw; height: 100vh; overflow: hidden;
-            background: url('https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1920&auto=format&fit=crop');
-            background-size: cover; background-position: center;
+            
+            /* --- UPDATE BACKGROUND LOKAL --- */
+            /* Pastikan kamu punya file gambar di folder images */
+            background: url('images/bgutama.png'); 
+            
+            background-size: cover; 
+            background-position: center;
             display: flex; justify-content: center; align-items: center;
             color: white; font-family: 'Montserrat', sans-serif;
         }
+        
+        /* Lapisan hitam transparan agar tulisan terbaca */
         .overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.6); z-index: 1;
         }
+        
         .content { position: relative; z-index: 2; text-align: center; width: 80%; }
         
         .welcome-text {
-            font-family: 'Great Vibes', cursive; font-size: 5rem; margin-bottom: 20px;
+            font-family: 'Great Vibes', cursive; font-size: 5rem; margin-bottom: 10px;
             color: #e8d3b5; text-shadow: 0 4px 10px rgba(0,0,0,0.5);
         }
+
+        /* --- UPDATE: TIDAK ITALIC --- */
+        .honorific-text {
+            font-family: 'Cormorant Garamond', serif; 
+            font-size: 2rem; 
+            font-weight: 500; /* Sedikit tebal agar jelas */
+            /* font-style: italic;  <-- DIHAPUS */
+            margin-bottom: 5px;
+            color: #ffffff;
+            opacity: 0.9;
+            letter-spacing: 1px;
+        }
+
         .guest-name {
             font-family: 'Cormorant Garamond', serif; font-size: 6rem; font-weight: 700;
             line-height: 1.1; text-transform: uppercase; letter-spacing: 2px; margin: 0;
@@ -48,6 +69,8 @@
     <div class="content" id="main-content" style="display: none;">
         <div class="welcome-text">Selamat Datang</div>
         
+        <div class="honorific-text">Yth. Bapak/Ibu/Saudara/i</div>
+
         <h1 class="guest-name" id="display-name">Tamu Undangan</h1>
         <p class="guest-group" id="display-group">-</p>
 
@@ -59,13 +82,11 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        // ============================================
-        // PASTE LINK BARU SCRIPT KAMU DISINI
-        // ============================================
+        // Link Google Script Kamu
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxEqd4culfHe33LaUOkwtCtDYaStsMOqF3jf5i-SOuchznInQXwSSVtmwr0WG6sMRnprg/exec";
         
-        let lastKnownName = ""; // Nama terakhir yang didapat dari server
-        let resetTimer; // Variabel Timer
+        let lastKnownName = "";
+        let resetTimer;
 
         function fetchData() {
             $.ajax({
@@ -79,25 +100,13 @@
                         $('#main-content').fadeIn();
                         $('#total-count').text(data.total);
 
-                        // LOGIKA 3 DETIK
-                        // Jika nama dari server BEDA dengan yang tersimpan terakhir
-                        // DAN namanya bukan "DEFAULT_RESET"
                         if (data.nama !== lastKnownName && data.nama !== "DEFAULT_RESET") {
-                            
-                            // 1. Tampilkan Nama Baru
                             updateDisplay(data.nama, data.grup);
-                            
-                            // 2. Simpan nama ini agar tidak refresh terus
                             lastKnownName = data.nama;
-
-                            // 3. Reset Timer sebelumnya (kalau ada tamu masuk beruntun)
                             clearTimeout(resetTimer);
-
-                            // 4. Set Timer Baru 3 Detik
                             resetTimer = setTimeout(() => {
-                                // Balik ke Default
                                 updateDisplay("Tamu Undangan", ""); 
-                            }, 15000); // Saya kasih 5 detik biar lebih enak dibaca, ganti 3000 kalau mau 3 detik pas
+                            }, 15000); 
                         }
                     }
                 },
@@ -114,7 +123,6 @@
 
         $(document).ready(function() {
             fetchData();
-            // Cek setiap 2 detik
             setInterval(fetchData, 2000); 
         });
     </script>
